@@ -1,0 +1,300 @@
+@extends('layout.general_layout')
+
+<title>@yield('title','Admin Dashboard')</title>
+@section('content')
+
+<div class="wrapper"> 
+    <div class="content"> 
+        <style>
+            @media (max-width: 768px) {
+                .feedback-card {
+                    flex-direction: column;
+                    text-align: center;
+                }
+                .feedback-item {
+                    width: 100%;
+                }
+            }
+
+            .feedback-item {
+    position: relative; /* Allows absolute positioning inside */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa; /* Light gray background */
+    border-radius: 10px;
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.15); /* Softer shadow */
+    padding: 20px;
+    width: 150px;  /* Increased width */
+    height: 150px; /* Increased height */
+    flex-basis: 150px;
+    text-align: center;
+   
+    border: 1px solid #dee2e6; /* Light border for definition */
+}
+
+
+/* Red circle for feedback count */
+.feedback-count {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #dc3545; /* Bootstrap danger red */
+    color: #fff; /* White text */
+    font-size: 0.85rem;
+    font-weight: bold;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Soft shadow for depth */
+}
+
+/* Feedback label */
+.feedback-label {
+    font-size: 1rem;
+    color: #6c757d; /* Muted gray for secondary text */
+    margin-top: 4px;
+}
+
+/* Button styling */
+.feedback-button {
+    margin-top: 10px;
+    font-size: 0.8rem;
+    padding: 6px 12px;
+    background: #e9ecef; /* Subtle gray background */
+    color: #495057;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    transition: all 0.2s ease-in-out;
+    letter-spacing: 2px;
+}
+
+ 
+.feedback-icon {
+    width: 40px;  /* Adjust the size */
+    height: 40px;
+    display: block;
+    margin: 0 auto; /* Centers the icon */
+}
+
+        </style>
+
+        <div class="container my-4">
+            <h2 class="text-center mb-4">Office Remarks</h2>
+            <div class="row g-3">
+    @foreach($data as $office)
+    <div class="col-12"> <!-- Full width for all screens -->
+        <div class="card shadow-sm border-0 rounded-3 bg-light w-100">
+
+            <!-- Card Body -->
+            <div class="card-body bg-light d-flex flex-column flex-md-row align-items-start p-3" 
+                 style=" margin-bottom: 10px;border: 1px solid #ddd; border-radius: 10px; box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.1);">
+
+               
+                 <div class="d-flex flex-column flex-shrink-0" style="min-width: 300px; max-width: 300px;">
+        <h5 class="text-dark fw-bold px-3 py-2 rounded"
+            style="background-color: #f8f9fa; text-align: left; 
+                   font-size: 28px; 
+                   display: flex; align-items: center;min-width:300px;max-width:300px">
+            {{ $office['office_name'] }} Office
+        </h5>
+        <p class="text-muted mt-1 px-3" style="font-size: 16px; font-weight: bold;">
+            Total Responses: {{ $office['total_responses'] }}
+        </p>
+    </div>
+
+
+                <!-- Feedback Cards (Stack in Mobile) -->
+                <div class="d-flex flex-wrap justify-content-center justify-content-md-end gap-3 w-100 w-md-auto">
+
+<div class="feedback-item">
+<svg class="feedback-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#dc3545">
+        <!-- Circle Background -->
+        <circle cx="12" cy="12" r="10" fill="#dc3545"/>
+        
+        <!-- Exclamation Mark -->
+        <line x1="12" y1="7" x2="12" y2="14" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="12" cy="17" r="1.5" fill="white"/>
+    </svg>
+    <span class="feedback-count">{{ $office['complaints'] }}</span>
+    <small class="feedback-label">Complaints</small>
+
+    <button class="btn btn-sm btn-danger feedback-button notify-btn"
+        data-office-id="{{ $office['office_id'] }}"
+        data-complaint-count="{{ $office['complaints'] }}">
+        Alert
+    </button>
+</div>
+
+
+
+<!-- Success Message Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center border-0 shadow-sm" style="border-radius: 12px; max-width: 320px; margin: auto;">
+            
+            <!-- Modal Header -->
+             
+
+            <!-- Modal Body -->
+            <div class="modal-body text-center">
+                <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                <h4 id="successMessage">Action completed successfully!</h4>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class=" d-flex justify-content-center mb-3 ">
+                <button type="button" class="btn btn-success" id="closeSuccessModal">
+                   OK
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function showSuccessMessage(message) {
+        document.getElementById('successMessage').innerText = message;
+
+        var successModal = new bootstrap.Modal(document.getElementById('successModal'));
+        successModal.show();
+
+        // Automatically close the modal when OK button is clicked
+        document.getElementById('closeSuccessModal').addEventListener('click', function() {
+            successModal.hide(); // Explicitly hide the modal
+        });
+    }
+</script>
+
+<!-- Confirmation Modal -->
+<!-- Confirmation Modal --><!-- Confirmation Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center border-0 shadow-sm" style="border-radius: 12px; max-width: 320px; margin: auto;">
+            
+            <!-- Modal Header -->
+            <div class="modal-body p-4">
+                <div class="mb-3">
+                    <i class="fas fa-exclamation-circle" style="font-size: 2.5rem; color: #3b82f6;"></i>
+                </div>
+                <h5 class="fw-bold">Are you sure?</h5>
+                <p class="text-muted mb-3">
+                    This action can’t be undone. Please confirm if you want to proceed.
+                </p>
+
+                <!-- Buttons -->
+                <div class="d-flex justify-content-center gap-2">
+                    <button type="button" class="btn btn-outline-dark px-3" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary px-3" id="confirmNotifyBtn">
+                        Confirm
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    let selectedOfficeId = null;
+    let selectedComplaintCount = null;
+
+    document.querySelectorAll(".notify-btn").forEach(button => {
+        button.addEventListener("click", function() {
+            selectedOfficeId = this.getAttribute("data-office-id");
+            selectedComplaintCount = this.getAttribute("data-complaint-count");
+
+            console.log("✅ Button Clicked! Office ID:", selectedOfficeId, "Complaints:", selectedComplaintCount);
+            
+            // Show confirmation modal
+            var confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
+            confirmModal.show();
+        });
+    });
+
+    // When user confirms notification
+    document.getElementById("confirmNotifyBtn").addEventListener("click", function() {
+        if (!selectedOfficeId || !selectedComplaintCount) return;
+
+        fetch('/notifications/send-complaint', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                office_id: selectedOfficeId,
+                title: "Complaint Alert ",
+                message: `You have received ${selectedComplaintCount} complaint(s).  `
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("✅ Response Received:", data);
+            showSuccessMessage("Notification sent to the Office successfully!");
+        })
+        .catch(error => {
+            console.error('❌ Error:', error);
+            alert("❌ Failed to send notification.");
+        });
+
+        // Close the confirmation modal after action
+        var confirmModal = bootstrap.Modal.getInstance(document.getElementById('confirmModal'));
+        confirmModal.hide();
+    });
+  });
+</script>
+
+
+
+@include('components.alert')
+                            <!-- Feedbacks -->
+                            <div class="feedback-item">
+                            <svg class="feedback-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#28a745" stroke="none">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+    </svg>
+
+                                <span class="feedback-count">{{ $office['feedbacks'] }}</span>
+                                <small class="feedback-label">Feedbacks</small>
+                                <a href="{{ route('view_feedbacks', ['office_name' => $office['office_name']]) }}" 
+                                   class="btn btn-sm btn-success feedback-button">
+                                    View 
+                                </a>
+                            </div>
+
+                            <!-- Recommendations -->
+                            <div class="feedback-item">
+                            <svg class="feedback-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+        <!-- Lightbulb Body -->
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7z" 
+              fill="orange" stroke="orange" stroke-width="1.5"/>
+
+        <!-- Lightbulb Base -->
+        <rect x="9" y="18" width="6" height="3" rx="1" fill="#b5651d"/>
+
+        <!-- Lightbulb Filament -->
+        <line x1="10" y1="13" x2="14" y2="13" stroke="yellow" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+
+                                <span class="feedback-count">{{ $office['recommendations'] }}</span>
+                                <small class="feedback-label">Recommendations</small>
+                                <a  class="btn btn-sm btn-warning feedback-button">
+                                    Show 
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+</div>
+@endsection

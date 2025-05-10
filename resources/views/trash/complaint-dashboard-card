@@ -1,0 +1,166 @@
+        <!-- Card 4 -->
+        <div class="dashboard-card">
+    <div class="card-top-line" style="background-color: red;"></div>
+    <div class="card-sub-line" style="background-color: red;"></div>
+    <div class="card-number">{{$complaint_count}}</div>
+    <div class="card-subtext">Complaints</div>
+
+   <!-- View Button to Open Modal -->
+   @if($complaint_count > 0)
+    <button onclick="checkRequestStatus()" class="btn btn-sm btn-danger mt-2 w-100">
+        <i class="fas fa-eye"></i> <b>View</b>
+    </button>
+@endif
+<!-- Modal -->
+ <!-- Modal -->
+ 
+<div class="modal fade" id="requestModal" tabindex="-1" aria-labelledby="requestModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-sm border-0">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title fw-bold text-dark" id="requestModalLabel">
+                    <i class="fas fa-file-alt"></i> Complaint Viewing Request
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body text-center">
+                <p class="text-muted">
+                    Are you sure you want to request access to view complaints for this office?
+                </p>
+
+                <form id="requestForm" action="{{ route('requests.store') }}" method="POST">
+
+                    @csrf
+                    <input type="hidden" name="main_office_id" value="{{ session('office_id') }}">
+                    <input type="hidden" name="request_type" value="View Complaints">
+
+                    <div class="modal-footer d-flex justify-content-center">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Submit Request
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Pending Request Modal -->
+<!-- Pending Request Modal -->
+<div class="modal fade" id="pendingModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-sm border-0">
+            <div class="modal-header bg-secondary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-clock"></i> Request Pending
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body text-center text-dark">
+                <p>Your request to view complaints is currently pending. Please wait for approval.</p>
+                <small class="text-muted">This window will close in <span id="timer">10</span> seconds.</small>
+            </div>
+
+            <div class="modal-footer d-flex justify-content-center">
+                <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">
+                    <i class="fas fa-check"></i> OK
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var pendingModal = document.getElementById("pendingModal");
+
+    pendingModal.addEventListener("shown.bs.modal", function () {
+        let timeLeft = 10;
+        let timerElement = document.getElementById("timer");
+
+        let countdown = setInterval(() => {
+            timeLeft--;
+            timerElement.textContent = timeLeft;
+
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                var modalInstance = bootstrap.Modal.getInstance(pendingModal);
+                modalInstance.hide();
+            }
+        }, 1000);
+    });
+});
+</script>
+
+<!-- Rejected Request Modal -->
+<!-- Rejected Request Modal -->
+<div class="modal fade" id="rejectedModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light text-dark">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle text-danger"></i> Request Rejected
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <i class="fas fa-times-circle text-danger" style="font-size: 3rem;"></i>
+                <p class="text-muted mt-3">
+                    The admin has <strong>rejected</strong> your request to view complaints.  
+                    If you believe this is an error, please contact the admin.
+                </p>
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-check"></i> OK
+                </button>
+            </div>
+        </div>
+    </div>  
+</div>
+
+</div>
+
+<script>
+function checkRequestStatus() {
+    fetch("{{ route('requests.status', session('office_id')) }}")
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'pending') {
+                // Show pending modal
+                var pendingModal = new bootstrap.Modal(document.getElementById('pendingModal'));
+                pendingModal.show();
+            } else if (data.status === 'approved') {
+                // Redirect to complaints page
+                window.location.href = "/approved-complaints";
+            } else if (data.status === 'rejected') {
+                // Show rejection modal
+                var rejectedModal = new bootstrap.Modal(document.getElementById('rejectedModal'));
+                rejectedModal.show();
+            } else {
+                // Show request form modal
+                var requestModal = new bootstrap.Modal(document.getElementById('requestModal'));
+                requestModal.show();
+            }
+        })
+        .catch(error => console.error('Error checking request status:', error));
+}
+</script>
+
+
+
+
+
+
+
+
+
+
+
+

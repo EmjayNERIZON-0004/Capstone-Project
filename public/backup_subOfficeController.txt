@@ -1,0 +1,117 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\MainOffice;
+use App\Models\Service;
+use App\Models\SubOffice;
+use Illuminate\Http\Request;
+
+class SubOfficeController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $subOffice = SubOffice::all();
+        $services = Service::all();
+        
+        return view('SubOfficeList')->with('sub',$subOffice) ->with('services',$services);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create($main_office_id)
+    {
+        $mainOffice = MainOffice::findOrFail($main_office_id);
+        return view('AddSubOffice', compact('mainOffice'));
+    }
+    
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $sub = new SubOffice();
+        $sub->sub_office_name = $request->input('sub_office_name');
+        $sub->main_office_id = $request->input('main_office_id'); 
+ 
+        $sub->save();
+         
+        return redirect()->route('subOffice.show', $request->input('main_office_id'))->with('success', 'Sub Offfice Added successfully!');
+
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show($main_office_id)
+    {
+        $subOffices = SubOffice::where('main_office_id', $main_office_id)->get();
+        $mainOffice = MainOffice::where('office_id', $main_office_id)->firstOrFail();
+        
+        // Get all services linked to the main office
+        $services = Service::where('main_office_id', $main_office_id)->get();
+    
+        // Check if all services for this main office have NULL sub_office_id
+        $servicesWithoutSubOffice = Service::where('main_office_id', $main_office_id)
+            ->whereNull('sub_office_id')
+            ->exists(); // Checks if at least one service has NULL sub_office_id
+    
+        if ($servicesWithoutSubOffice) {
+            return view('MainOfficeServiceList', compact('services', 'mainOffice'));
+        } else {
+            return view('SubOfficeList', compact('subOffices', 'mainOffice'));
+        }
+    }
+    
+    
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        $subOffice = SubOffice::findOrFail($id);
+        $mainOffices = MainOffice::all(); // Fetch all main offices for dropdown
+    
+        return view('EditSubOffice', compact('subOffice', 'mainOffices'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+{
+    $subOffice = SubOffice::findOrFail($id);
+  
+    $subOffice->main_office_id = $request->main_office_id;
+    $subOffice->sub_office_name = $request->sub_office_name;
+    $subOffice->save();
+
+    // Pass main_office_id to the route
+    return redirect()->route('subOffices.show', $subOffice->main_office_id)
+        ->with('success', 'Sub Office updated successfully!');
+}
+
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        $sub = SubOffice::findOrFail($id); // Find sub-office by ID or fail
+        $main_office_id = $sub->main_office_id; // Get the main office ID before deleting
+    
+        // Delete all services linked to this sub-office
+        Service::where('sub_office_id', $id)->delete();
+    
+        // Delete the sub-office
+        $sub->delete();
+    
+        // Redirect back to the sub-office list for the same main office
+        return redirect()->route('subOffices.show', $main_office_id)->with('success', 'Sub Office Deleted successfully!');
+    }
+}

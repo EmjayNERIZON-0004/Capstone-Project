@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@yield('title')</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            background-color: rgb(139, 170, 202);
+        }
+
+        /* Sidebar (Hidden by Default) */
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background: #343a40;
+            color: white;
+            padding: 15px;
+            position: fixed;
+            left: -260px; /* Hidden on load */
+            top: 0;
+            transition: left 0.3s ease-in-out;
+            z-index: 1030;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            padding: 10px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar a:hover {
+            background: #495057;
+        }
+
+        .sidebar .active {
+            background: #007bff;
+        }
+
+        /* Sidebar Open */
+        .sidebar.open {
+            left: 0;
+        }
+
+        /* Main Content */
+        .content {
+            flex-grow: 1;
+            margin-left: 0; /* Default: No margin */
+            padding: 10px;
+            transition: margin-left 0.3s ease-in-out;
+            width: 100%;
+        }
+
+        /* Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 10px 20px;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar button {
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        /* Overlay for Mobile */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1029;
+            display: none;
+        }
+
+        .overlay.show {
+            display: block;
+        }
+
+        /* Desktop: Sidebar Pushes Content */
+        @media (min-width: 769px) {
+            .content.shifted {
+                margin-left: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <img src="{{ asset('logo.png') }}" alt="Logo" class="logo mx-auto d-block" style="width: 140px;">
+        <h4 class="text-center mt-2">Admin Panel</h4>
+        
+        <a href="{{ route('Main') }}" class="{{ Request::is('Main') ? 'active' : '' }}">Dashboard</a>
+        <a href="{{ url('mainOffice') }}" class="{{ Request::is('mainOffice') ? 'active' : '' }}">Office Management</a>
+        <a href="{{ route('survey.responses') }}" class="{{ Request::is('survey-responses') ? 'active' : '' }}">Survey Responses</a>
+        <a href="{{ route('Report') }}" class="{{ Request::is('Report') ? 'active' : '' }}">Reports</a>
+        <a href="{{url('/Login')}}" class="{{ Request::is('Report') ? 'active' : '' }}">Logout</a>
+    </div>
+
+    <!-- Overlay for Mobile -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Main Content -->
+    <div class="content" id="mainContent">
+        <div class="navbar">
+            <button id="toggleMenu">
+                <i class="fas fa-bars"></i> Menu
+            </button>
+            <div class="user-info">
+                <span>Admin</span>
+               <i class="fas fa-user-circle"></i>
+            </div>
+        </div>
+
+        @yield('content')
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let sidebar = document.getElementById("sidebar");
+            let overlay = document.getElementById("overlay");
+            let menuButton = document.getElementById("toggleMenu");
+            let mainContent = document.getElementById("mainContent");
+
+            // Hide sidebar by default
+            sidebar.classList.remove("open");
+
+            function toggleSidebar() {
+                if (window.innerWidth <= 768) { // Mobile: Overlay Effect
+                    sidebar.classList.toggle("open");
+                    overlay.classList.toggle("show");
+                } else { // Desktop: Sidebar Pushes Content
+                    sidebar.classList.toggle("open");
+                    mainContent.classList.toggle("shifted");
+                }
+            }
+
+            // Toggle Sidebar on Button Click
+            menuButton.addEventListener("click", toggleSidebar);
+
+            // Close Sidebar when clicking outside (on overlay) in mobile
+            overlay.addEventListener("click", function () {
+                sidebar.classList.remove("open");
+                overlay.classList.remove("show");
+            });
+
+            // Ensure Sidebar is Always Hidden on Load
+            window.addEventListener("load", function () {
+                sidebar.classList.remove("open");
+                overlay.classList.remove("show");
+                mainContent.classList.remove("shifted");
+            });
+
+            // Ensure Sidebar Closes on Resize
+            window.addEventListener("resize", function () {
+                if (window.innerWidth > 768) { // Desktop
+                    overlay.classList.remove("show");
+                    sidebar.classList.remove("open");
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title')</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="icon" href="{{asset('logo.png') }}" type="image/png">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<!-- Add this in <head> -->
+<link href="https://fonts.cdnfonts.com/css/digital-7" rel="stylesheet">
+
+    <!-- Bootstrap & Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ebebeb;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 150px;
+            background-color: #fff;
+            z-index: 1040; 
+            padding: 0 1rem;
+            
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 89px;
+            left: -250px;
+            width: 250px;
+            height: 100vh;
+            background:rgb(46, 46, 46);
+            color: white;
+            padding: 15px;
+            overflow-y: auto;
+            z-index: 1050;
+            transition: left 0.3s ease;
+            font-weight:400;
+            font-family:Verdana, Geneva, Tahoma, sans-serif;
+            letter-spacing: 1px;
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            padding: 10px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar a:hover {
+            background:rgb(34, 138, 207);
+        }
+
+        .sidebar .active {
+            background:rgb(34, 138, 207);
+        }
+
+        /* Content */
+        .content { 
+            margin-left: 0;
+            padding: 30px;
+            margin-top:10px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .sidebar.open ~ .content {
+            margin-left: 250px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar.open ~ .content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar d-flex justify-content-between align-items-center px-4" style="height: 90px; background-color:#27548A; color:white">
+    <div class="d-flex align-items-start gap-3 h-100 pt-4">
+        <!-- Hamburger -->
+        <button class="btn" id="toggleSidebarBtn" style="font-size: 1.5rem;color:white">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+
+    <!-- Centered Title -->
+    <div class="text-center" style="line-height: 1.3; font-family: 'Roboto', sans-serif;">
+    <h4 class="mb-0 fw-bold" style="font-size:2rem; letter-spacing: 0.5px;">Schools Division Office - San Carlos City</h4>
+    <h5 class="mb-0" style="font-size: 1.3rem; font-weight: 500; color: white;"></h5>
+    <h6 class="mb-0" style="font-size: 1.3rem; font-weight: 400; color: white;">Customer Satisfaction Measurement</h6>
+</div>
+
+
+    <!-- Right Side: Notification and Dropdown -->
+    <div class="d-flex align-items-start gap-3 pt-2">
+        <!-- Bell Icon -->
+    
+        <!-- Dropdown -->
+        <div class="d-flex justify-content-center">
+    <div class="dropdown">
+        <button  
+            style="color:white;"
+            class="btn dropdown-toggle d-flex align-items-center" 
+            type="button" 
+            id="userDropdown" 
+            data-bs-toggle="dropdown" 
+            aria-expanded="false">
+            
+            <img src="{{ asset('avatar.svg') }}" alt="User" 
+            style="width: 48px; height: 48px; border: 3px solid white; border-radius: 50%" 
+            class="me-1">
+
+                  
+                 <div>
+                 <div id="realtimeClock"
+                    style="font-size: 1rem; 
+                    font-weight: 500;
+                     color: white;
+                     padding-left:5px;
+                     padding-right:5px; 
+                    text-align:right;
+                    width:fit-content; 
+                    border-radius: 8px;   border:1px solid white;
+                    letter-spacing: 2px; text-transform:lowercase;">
+                </div>  
+            <h6 style="font-family: sans-serif; " class="me-2 mt-2">SDO-SCC-Admin</h6>
+            </div>
+        </button>
+   
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+            <li><a class="dropdown-item" href="{{ route('Main') }}">Dashboard</a></li>
+            <li><a class="dropdown-item" href="{{ url('logout') }}">Logout</a></li>
+        </ul>
+     
+    </div>
+</div>
+
+
+    </div>
+</nav>
+
+
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <!-- <img src="{{ asset('logo.png') }}" alt="Logo" class="logo mx-auto d-block" style="width: 140px;"> -->
+        
+        <!-- <div class="d-flex align-items-center justify-content-center mb-3">
+            <img src="{{ asset('admin.svg') }}" alt="Admin Icon" class="me-2" style="width: 40px;">
+            <h4 class="mt-2 mb-0">Administrator</h4>
+        </div> -->
+
+        <a href="{{ route('Main') }}" class="{{ Request::is('Main') ? 'active' : '' }}">Dashboard</a>
+        <a href="{{ url('mainOffice') }}" class="{{ Request::is('mainOffice') ? 'active' : '' }}">Office Management</a>
+        <div class="dropdown">
+    <a href="#"
+       class="d-flex justify-content-between align-items-center {{ Request::is('Admin/Surveys*') ? 'active' : '' }}"
+       data-bs-toggle="collapse"
+       data-bs-target="#surveyDropdown"
+       aria-expanded="{{ Request::is('Admin/Surveys*') ? 'true' : 'false' }}">
+        <span> Responses</span>
+        <i class="fas fa-caret-down"></i>
+    </a>
+
+    <div class="collapse {{ Request::is('Admin/Surveys*') ? 'show' : '' }}" id="surveyDropdown" style="margin-left: 10px;">
+        <a href="{{ route('survey.responses') }}" style="margin-left: 10px;"
+           class="{{ Request::is('Admin/Surveys') ? 'active' : '' }}">Surveys</a>
+
+        <a href="{{ route('survey_analytics') }}" style="margin-left: 10px;"
+           class="{{ Request::is('Admin/Analytics') ? 'active' : '' }}">Analytics</a>
+    </div>
+</div>
+    <a href="{{ route('AdminReports') }}" class="{{ Request::is('reports_view') ? 'active' : '' }}">Reports</a>
+        <a href="{{ route('requests.manage') }}" class="{{ Request::is('requests.manage') ? 'active' : '' }}">Requests</a>
+        <a href="{{ route('account_list') }}" class="{{ Request::is('account_list') ? 'active' : '' }}">Accounts</a>
+   
+    </div>
+
+    <!-- Content -->
+    <div class="content" id="content">
+        @yield('content')
+    </div>
+
+    <!-- Script -->
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.getElementById('toggleSidebarBtn');
+        const content = document.getElementById('content');
+
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            content.classList.toggle('shifted');
+        });
+    </script>
+<script src="{{ asset('js/AdminDashboardJS/more_function.js') }}"></script>
+
+</body>
+</html>

@@ -1,0 +1,499 @@
+<script>
+    // Set current quarter and year
+    document.addEventListener("DOMContentLoaded", function() {
+        const month = new Date().getMonth() + 1; // Months are 0-indexed in JS
+        const year = new Date().getFullYear();
+        const quarter = Math.ceil(month / 3);
+        
+        document.getElementById('quarter-display').textContent = `Q${quarter} ${year}`;
+        
+        // Simulate fetching data
+        fetch('/Admin/OfficesRemarks/2/2025')
+            .then(response => response.json())
+            .then(data => {
+                let totalResponses = 0;
+                let totalComplaints = 0;
+                let totalFeedbacks = 0;
+                let totalRecommendations = 0;
+                
+                // Calculate totals from all offices
+                data.forEach(office => {
+                    totalResponses += office.total_responses;
+                    totalComplaints += office.complaints;
+                    totalFeedbacks += office.feedbacks;
+                    totalRecommendations += office.recommendations;
+                });
+                
+                // Update the dashboard
+                document.getElementById('total-responses').textContent = totalResponses;
+                document.getElementById('complaints-count').textContent = totalComplaints;
+                document.getElementById('feedbacks-count').textContent = totalFeedbacks;
+                document.getElementById('recommendations-count').textContent = totalRecommendations;
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                // For demo purposes, set some example data if fetch fails
+                document.getElementById('total-responses').textContent = '245';
+                document.getElementById('complaints-count').textContent = '78';
+                document.getElementById('feedbacks-count').textContent = '124';
+                document.getElementById('recommendations-count').textContent = '43';
+            });
+    });
+</script>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Custom plugin to display values at the end of horizontal bars
+        const endLabelPlugin = {
+            id: 'endLabel',
+            afterDatasetsDraw: (chart, args, options) => {
+                const { ctx } = chart;
+                
+                chart.data.datasets.forEach((dataset, datasetIndex) => {
+                    const meta = chart.getDatasetMeta(datasetIndex);
+                    
+                    if (!meta.hidden) {
+                        meta.data.forEach((element, index) => {
+                            const value = dataset.data[index];
+                            if (value !== 0) {
+                                // Position the label just after the end of the bar
+                                const x = element.x + 5;
+                                const y = element.y;
+                                
+                                // Set text appearance
+                                ctx.font = 'normal 12px Roboto';
+                                ctx.fillStyle = '#333';
+                                ctx.textAlign = 'left';
+                                ctx.textBaseline = 'middle';
+                                
+                                // Display the value
+                                ctx.fillText(value, x, y);
+                            }
+                        });
+                    }
+                });
+            }
+        };
+        
+        // Register the plugin globally
+        Chart.register(endLabelPlugin);
+
+        fetch('/Admin/OfficesRemarks/2/2025')
+            .then(response => response.json())
+            .then(data => {
+                const officesContainer = document.getElementById('offices-container');
+                
+                data.forEach(office => {
+                    // Create the office card
+                    const officeCard = document.createElement('div');
+                    officeCard.classList.add('col-12');
+                    
+                    // Generate the HTML structure for each office
+                    officeCard.innerHTML = `
+                        <div class="card shadow-sm border-0 rounded-3 bg-light w-100 mb-4">
+                            <div class="card-body bg-light d-flex flex-column flex-md-row align-items-start p-3" style="margin-bottom: 10px;border: 1px solid #ddd; border-radius: 10px; box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.1);">
+                                <div class="d-flex flex-column flex-shrink-0" style="min-width: 300px; max-width: 300px;">
+                                    <h5 class="text-dark fw-bold px-3 py-2 rounded" style="background-color: #f8f9fa; text-align: left; font-size: 28px;">
+                                        ${office.office_name} Office
+                                    </h5>
+                                    <p class="text-muted mt-1 px-3" style="font-size: 16px; font-weight: bold;">
+                                        Total Responses: ${office.total_responses}
+                                    </p>
+                                </div>
+                                <div class="d-flex flex-wrap justify-content-center justify-content-md-end gap-3 w-100 w-md-auto">
+                                    <div class="feedback-item">
+                                        <svg class="feedback-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#dc3545">
+                                            <circle cx="12" cy="12" r="10" fill="#dc3545"/>
+                                            <line x1="12" y1="7" x2="12" y2="14" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                                            <circle cx="12" cy="17" r="1.5" fill="white"/>
+                                        </svg>
+                                        <span class="feedback-count">${office.complaints}</span>
+                                        <small class="feedback-label">Complaints</small>
+                                         <button class="btn btn-sm btn-danger feedback-button notify-btn"
+        data-office-id="${office.office_id}"
+        data-complaint-count="${office.complaints}">
+        Alert
+    </button>
+                                    </div>
+                                    <div class="feedback-item">
+                                        <svg class="feedback-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#28a745">
+                                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                        </svg>
+                                        <span class="feedback-count">${office.feedbacks}</span>
+                                        <small class="feedback-label">Feedbacks</small>
+                                        <a href="/view_feedbacks?office_name=${office.office_name}" class="btn btn-sm btn-success feedback-button">View</a>
+                                    </div>
+                                    <div class="feedback-item">
+                                        <svg class="feedback-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                            <path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7z" fill="orange"/>
+                                            <rect x="9" y="18" width="6" height="3" rx="1" fill="#b5651d"/>
+                                            <line x1="10" y1="13" x2="14" y2="13" stroke="yellow" stroke-width="1.5"/>
+                                        </svg>
+                                        <span class="feedback-count">${office.recommendations}</span>
+                                        <small class="feedback-label">Recommendations</small>
+                                        <a href="#" class="btn btn-sm btn-warning feedback-button">Show</a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card-body">
+                            <div class="d-flex">
+                                 <img class="svg" src="{{ asset('analysis-title.svg') }}" alt="SVG Image"> 
+                                <h5 class="card-title pt-3">Remarks Type - Responses</h5>
+                                </div>
+                                <div class="chart-container" style="height: 150px;">
+                                    <canvas id="responseTypeChart-${office.office_id}"></canvas>
+                                </div>
+                            </div>
+                            
+                            <div class="card-body">
+                               <div class="d-flex">
+                                 <img class="svg" src="{{ asset('analysis-title.svg') }}" alt="SVG Image"> 
+                                <h5 class="card-title pt-3">Section - Responses</h5>
+                                </div>  <div class="chart-container" style="height: ${office.sub_offices.length * 25 + 100}px;">
+                                    <canvas id="subOfficesChart-${office.office_id}"></canvas>
+                                </div>
+                            </div>
+                            
+                            <div class="card-body">
+                              <div class="d-flex">
+                                 <img class="svg" src="{{ asset('analysis-title.svg') }}" alt="SVG Image"> 
+                                <h5 class="card-title pt-3">Services - Responses</h5>
+                                </div>
+                                <div class="chart-container" style="height: ${getServiceCount(office) * 25 + 100}px;">
+                                    <canvas id="servicesChart-${office.office_id}"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    officesContainer.appendChild(officeCard);
+    
+                    const alertButton = officeCard.querySelector('.notify-btn');
+            alertButton.addEventListener('click', function() {
+                 selectedOfficeId = this.getAttribute("data-office-id");
+            selectedComplaintCount = this.getAttribute("data-complaint-count");
+   
+            var confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
+            confirmModal.show();
+            });
+                 
+                    // Create response type chart (complaints, feedbacks, recommendations)
+                    createResponseTypeChart(office.office_id, office);
+                    
+                    // Create sub-offices chart
+                    createSubOfficesChart(office.office_id, office);
+                    
+                    // Create services chart
+                    createServicesChart(office.office_id, office);
+                });
+
+
+            
+            const confirmNotifyBtn = document.getElementById("confirmNotifyBtn");
+            confirmNotifyBtn.addEventListener('click', function() {
+         
+                 
+                            if (!selectedOfficeId || !selectedComplaintCount) return;
+
+            fetch('/notifications/send-complaint', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                    office_id: selectedOfficeId,
+                    title: "Complaint Alert ",
+                    message: `You have received ${selectedComplaintCount} complaint(s).  `
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("✅ Response Received:", data);
+                showSuccessMessage("Notification sent to the Office successfully!");
+            })
+            .catch(error => {
+                console.error('❌ Error:', error);
+                alert("❌ Failed to send notification.");
+            });
+
+            // Close the confirmation modal after action
+            var confirmModal = bootstrap.Modal.getInstance(document.getElementById('confirmModal'));
+            confirmModal.hide(); 
+
+
+
+
+
+
+
+
+                
+            });
+            })
+            .catch(error => console.error('Error fetching data:', error));
+
+        // Helper function to count total services across all sub-offices
+        function getServiceCount(office) {
+    let count = 0;
+
+    if (office.sub_offices && Array.isArray(office.sub_offices)) {
+        office.sub_offices.forEach(sub => {
+            if (sub.services) count += sub.services.length;
+        });
+    }
+
+    if (office.other_requests && Array.isArray(office.other_requests)) {
+        count += office.other_requests.length;
+    }
+
+    return count;
+}
+
+
+        // Function to create response type horizontal bar chart with end labels
+        function createResponseTypeChart(officeId, office) {
+            const ctx = document.getElementById('responseTypeChart-' + officeId).getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Complaints', 'Feedbacks', 'Recommendations'],
+                    datasets: [{
+                        data: [office.complaints, office.feedbacks, office.recommendations],
+                        backgroundColor: ['#dc3545', '#28a745', '#ffc107'],
+                        borderColor: ['#dc3545', '#28a745', '#ffc107'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',  // This makes the bars horizontal
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: true
+                        }
+                    },
+                    elements: {
+            bar: {
+                 // Optional: rounded corners for bars
+                barThickness: 20  // Set the bar thickness here (pixels)
+            }
+        },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: {
+                                display: true,
+                                color: "rgba(0,0,0,0.05)"
+                            },
+                            // Add padding to make room for labels
+                            ticks: {
+                                padding: 10
+                            }
+                        },
+                        y: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    // Add padding to the right for labels
+                    layout: {
+                        padding: {
+                            right: 40
+                        }
+                    }
+                }
+            });
+        }
+
+        // Function to create sub-offices chart with end labels
+        function createSubOfficesChart(officeId, office) {
+            const ctx = document.getElementById('subOfficesChart-' + officeId).getContext('2d');
+            
+            // Extract sub-office names and count their total responses
+            const subOfficeLabels = [];
+            const subOfficeData = [];
+            const serviceColors = [];
+            const colorMap = {};
+            
+            // Generate a color map for each sub-office
+            office.sub_offices.forEach((subOffice, index) => {
+                // Generate a color based on index
+                const predefinedHues = [ 140, 220,0, 55]; // red, orange, green, blue
+const hue = predefinedHues[index % predefinedHues.length];  // cycle through colors
+colorMap[subOffice.sub_office_name] = `hsl(${hue}, 70%, 50%)`;
+ // Use golden angle approximation for color distribution
+                colorMap[subOffice.sub_office_name] = `hsl(${hue}, 60%, 50%)`;
+            });
+            office.sub_offices.forEach(subOffice => {
+                 
+                     serviceColors.push(colorMap[subOffice.sub_office_name]);
+                
+            });
+            office.sub_offices.forEach(subOffice => {
+                subOfficeLabels.push(subOffice.sub_office_name);
+                
+                // Calculate total responses for this sub-office
+                let totalResponses = 0;
+                subOffice.services.forEach(service => {
+                    totalResponses += service.responses;
+                });
+                
+                subOfficeData.push(totalResponses);
+            });
+          
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: subOfficeLabels,
+                    datasets: [{
+                        label: 'Total Responses',
+                        data: subOfficeData,
+                        backgroundColor: serviceColors,
+                        borderColor: '#ccc',
+                        borderWidth: 1,
+
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',  // This makes the bars horizontal
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: true
+                        }
+                    },
+                                elements: {
+                        bar: {
+                              // Optional: rounded corners for bars
+                            barThickness: 20  // Set the bar thickness here (pixels)
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: {
+                                display: true,
+                                color: "rgba(0,0,0,0.05)"
+                            },
+                            // Add padding to make room for labels
+                            ticks: {
+                                padding: 10
+                            }
+                        },
+                        y: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    // Add padding to the right for labels
+                    layout: {
+                        padding: {
+                            right: 40
+                        }
+                    }
+                }
+            });
+        }
+
+        // Function to create services chart with end labels
+        function createServicesChart(officeId, office) {
+            const ctx = document.getElementById('servicesChart-' + officeId).getContext('2d');
+            
+            // Extract all services across all sub-offices
+            const serviceLabels = [];
+            const serviceData = [];
+            const serviceColors = [];
+            const colorMap = {};
+            
+            // Generate a color map for each sub-office
+            office.sub_offices.forEach((subOffice, index) => {
+                // Generate a color based on index
+                const predefinedHues = [ 140, 220,0, 55]; // red, orange, green, blue
+const hue = predefinedHues[index % predefinedHues.length];  // cycle through colors 
+                colorMap[subOffice.sub_office_name] = `hsl(${hue}, 60%, 50%)`;
+            });
+            
+            // Collect all services and their data
+            office.sub_offices.forEach(subOffice => {
+                subOffice.services.forEach(service => {
+                    // Format the label to include sub-office
+                    serviceLabels.push(`${service.service_name} (${subOffice.sub_office_name})`);
+                    serviceData.push(service.responses);
+                    serviceColors.push(colorMap[subOffice.sub_office_name]);
+                });
+            });
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: serviceLabels,
+                    datasets: [{
+                        label: 'Responses',
+                        data: serviceData,
+                        backgroundColor: serviceColors,
+                        borderColor: serviceColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',  // This makes the bars horizontal
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: true
+                        }
+                    },        elements: {
+            bar: {
+                  // Optional: rounded corners for bars
+                barThickness: 20  // Set the bar thickness here (pixels)
+            }
+        },  
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: {
+                                display: true,
+                                color: "rgba(0,0,0,0.05)"
+                            },
+                            // Add padding to make room for labels
+                            ticks: {
+                                padding: 10
+                            }
+                        },
+                        y: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    // Add padding to the right for labels
+                    layout: {
+                        padding: {
+                            right: 45
+                        }
+                    }
+                }
+            });
+        }
+    });
+    
+
+</script>
+

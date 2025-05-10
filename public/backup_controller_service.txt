@@ -1,0 +1,151 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\MainOffice;
+use App\Models\SubOffice;
+
+use App\Models\Service;
+use Illuminate\Http\Request;
+
+class ServicesAvailedController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        //                                                                  
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create($sub_office_id)
+    {
+        $sub_office = SubOffice::findOrFail($sub_office_id);
+   
+        return view('AddOfficeService',compact('sub_office'));
+    }
+
+
+    public function createForMainOffice($main_office_id)
+    {
+        $mainOffice = MainOffice::findOrFail($main_office_id);
+        
+        return view('AddServiceToMain', compact('mainOffice'));
+    }
+    
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        // $request->validate([
+        //     'main_office_id' => 'required|exists:main_offices,id',
+        //     'sub_office_id' => 'required|exists:sub_offices,id',
+        //     'service_name' => 'required|string|max:255',
+        // ]);
+    
+        // Insert the service into the database
+        Service::create([
+            'main_office_id' => $request->input('main_office_id'),
+            'sub_office_id' => $request->input('sub_office_id'),
+            'service_name' => $request->input('service_name'),
+        ]);
+        
+        if (!$request->input('sub_office_id')) {
+            return redirect()->route('servicesAvailed.showMainOffice', $request->input('main_office_id'))
+                ->with('success', 'Service added successfully!');
+        }
+    
+        // Redirect back to the services list for this sub-office
+        return redirect()->route('servicesAvailed.show', $request->input('sub_office_id'))
+            ->with('success', 'Service added successfully!');
+    }
+
+
+    public function showMainOffice($main_office_id)
+    {   $mainOffice = MainOffice::where('office_id', $main_office_id)->firstOrFail();
+        $services = Service::where('main_office_id', $main_office_id)->get();
+
+          
+        return view('MainOfficeServiceList', compact('mainOffice', 'services'));
+    }
+    
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $sub_office_id)
+    {
+        $subOffice = SubOffice::findOrFail($sub_office_id);
+        $services = Service::where('sub_office_id', $sub_office_id)->get();
+        return view('officeServiceList', compact('subOffice', 'services'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+  public function edit(int $id)
+{
+    $service = Service::findOrFail($id);
+
+    // Check if sub_office_id is null
+    // if (is_null($service->sub_office_id)) {
+    //     return redirect()->route('servicesAvailed.showMainOffice', $service->main_office_id)
+    //         ->with('warning', 'This service is not linked to a sub-office.');
+    // }
+    
+        $service = Service::findOrFail($id);
+    
+        // Ensure sub_office_id is explicitly passed (even if null)
+        $sub_office_id = $service->sub_office_id; 
+        $service_name = $service->service_name; 
+        $main_office_id = $service->main_office_id; 
+    
+        return view('EditOfficeService', compact('service_name', 'sub_office_id','main_office_id','id'));
+    }
+    
+   
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        // $request->validate([
+        //     'service_name' => 'required|string|max:255',
+        // ]);
+    
+        $service = Service::findOrFail($id);
+        $service->service_name = $request->service_name;
+        $service->save();
+        
+        if (is_null($service->sub_office_id)) {
+            return redirect()->route('servicesAvailed.showMainOffice', $service->main_office_id)
+                ->with('success', 'Service updated successfully!');
+        }
+    
+        return redirect()->route('servicesAvailed.show', $service->sub_office_id)
+            ->with('success', 'Service updated successfully!');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        $service = Service::findOrFail($id); // Find service by ID
+        $sub_office_id = $service->sub_office_id; // Store sub_office_id before deleting
+        
+        $service->delete(); // Delete the record
+
+        if ($sub_office_id === null) {
+            return redirect()->route('subOffices.show',$service->main_office_id)
+                ->with('success', 'Service deleted successfully!');
+        }
+        // Redirect back to the services list for this sub-office
+        return redirect()->route('servicesAvailed.show', $sub_office_id)
+            ->with('success', 'Service deleted successfully!');
+    }
+}

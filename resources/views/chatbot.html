@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>SDO San Carlos City R1 CHAT AI</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="icon" href="https://assets.edlin.app/favicon/favicon.ico"/>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .chat-container {
+      width: 90%;
+      max-width: 800px;
+      height: 90vh;
+      max-height: 800px;
+      background-color: #fff;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .chat-header {
+      padding: 15px 20px;
+      background: linear-gradient(90deg, #0062E6, #33A1FD);
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    .chat-header img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid white;
+    }
+    
+    .header-info h3 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    
+    .online-status {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+    }
+    
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background-color: #4CAF50;
+      border-radius: 50%;
+    }
+    
+    .chat-messages {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background-color: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .message {
+      display: flex;
+      align-items: flex-start;
+      max-width: 85%;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .message-left {
+      align-self: flex-start;
+    }
+    
+    .message-right {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+    
+    .message-avatar {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0 8px;
+      flex-shrink: 0;
+    }
+    
+    .message-content {
+      padding: 12px 16px;
+      border-radius: 18px;
+      font-size: 14px;
+      line-height: 1.5;
+      position: relative;
+      max-width: calc(100% - 50px);
+      word-wrap: break-word;
+    }
+    
+    .message-left .message-content {
+      background-color: white;
+      border: 1px solid #e0e0e0;
+      border-bottom-left-radius: 5px;
+    }
+    
+    .message-right .message-content {
+      background: linear-gradient(90deg, #0062E6, #33A1FD);
+      color: white;
+      border-bottom-right-radius: 5px;
+    }
+    
+    /* Structured content styling */
+    .message-content strong {
+      font-weight: 600;
+    }
+    
+    .message-content em {
+      font-style: italic;
+    }
+    
+    .message-content p {
+      margin-bottom: 10px;
+    }
+    
+    .message-content ul, .message-content ol {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+    
+    .message-content li {
+      margin-bottom: 5px;
+    }
+    
+    .message-content h1, .message-content h2, .message-content h3, 
+    .message-content h4, .message-content h5, .message-content h6 {
+      margin-top: 15px;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    
+    .chat-footer {
+      padding: 15px;
+      border-top: 1px solid #ddd;
+      background-color: white;
+    }
+    
+    .message-form {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .message-input {
+      flex: 1;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 25px;
+      outline: none;
+      font-size: 14px;
+      transition: border 0.3s ease;
+    }
+    
+    .message-input:focus {
+      border-color: #0062E6;
+    }
+    
+    .send-button {
+      background: linear-gradient(90deg, #0062E6, #33A1FD);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.2s ease;
+    }
+    
+    .send-button:hover {
+      transform: scale(1.05);
+    }
+    
+    .send-button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+    
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      align-self: flex-start;
+    }
+    
+    .typing-dots {
+      display: flex;
+      gap: 3px;
+    }
+    
+    .dot {
+      width: 8px;
+      height: 8px;
+      background-color: #0062E6;
+      border-radius: 50%;
+      animation: typingAnimation 1.4s infinite;
+    }
+    
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+    
+    @keyframes typingAnimation {
+      0%, 80%, 100% { transform: scale(1); opacity: 0.5; }
+      40% { transform: scale(1.2); opacity: 1; }
+    }
+    
+    /* Scrollbar Styling */
+    .chat-messages::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .chat-messages::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    
+    .chat-messages::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 10px;
+    }
+    
+    .chat-messages::-webkit-scrollbar-thumb:hover {
+      background: #a1a1a1;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .chat-container {
+        width: 95%;
+        height: 95vh;
+        border-radius: 15px;
+      }
+      
+      .message {
+        max-width: 90%;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .chat-header img {
+        width: 40px;
+        height: 40px;
+      }
+      
+      .header-info h3 {
+        font-size: 14px;
+      }
+      
+      .message-content {
+        font-size: 13px;
+        padding: 10px 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="chat-container">
+    <div class="chat-header">
+      <img src="{{ asset('logo.png') }}" alt="SDO Logo">
+      <div class="header-info">
+        <h3>SDO San Carlos City Pangasinan R1</h3>
+        <div class="online-status">
+          <div class="status-dot"></div>
+          <span>Online</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="chat-messages" id="chat-messages">
+      <div class="message message-left">
+        <img class="message-avatar" src="{{ asset('logo.png') }}" alt="Avatar">
+        <div class="message-content">
+          <p><strong>Welcome to SDO San Carlos City Pangasinan R1!</strong></p>
+          <p>I'm your educational AI assistant. How can I help you today with information about our schools, programs, or educational resources?</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="typing-indicator" id="typing-indicator">
+      <img class="message-avatar" src="{{ asset('logo.png') }}" alt="Avatar">
+      <div class="typing-dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+    </div>
+    
+    <div class="chat-footer">
+      <form class="message-form" id="message-form">
+        <input type="text" class="message-input" id="message-input" placeholder="Type your message..." autocomplete="off">
+        <button type="submit" class="send-button" id="send-button">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    $(document).ready(function() {
+      const messageForm = $("#message-form");
+      const messageInput = $("#message-input");
+      const sendButton = $("#send-button");
+      const chatMessages = $("#chat-messages");
+      const typingIndicator = $("#typing-indicator");
+      
+      // Function to scroll to bottom of messages
+      function scrollToBottom() {
+        chatMessages.scrollTop(chatMessages[0].scrollHeight);
+      }
+      
+      // Initial scroll to bottom
+      scrollToBottom();
+      
+      // Handle form submission
+      messageForm.submit(function(event) {
+        event.preventDefault();
+        const messageText = messageInput.val().trim();
+        
+        if (messageText === '') return;
+        
+        // Disable input and button
+        messageInput.prop('disabled', true);
+        sendButton.prop('disabled', true);
+        
+        // Add user message to chat
+        chatMessages.append(`
+          <div class="message message-right">
+            <div class="message-content">${messageText}</div>
+            <img class="message-avatar" src="{{ asset('chat_icon.svg') }}" alt="Avatar">
+          </div>
+        `);
+        
+        scrollToBottom();
+        
+        // Show typing indicator
+        typingIndicator.css("opacity", "1");
+        scrollToBottom();
+        
+        // Clear input field
+        messageInput.val('');
+        
+        // Send message to server
+        $.ajax({
+          url: "/chat",
+          method: 'POST',
+          headers: { 'X-CSRF-TOKEN': "{{csrf_token()}}" },
+          data: { "model": "jamba-large-1.6", "content": messageText },
+          timeout: 60000 // 60 second timeout
+        }).done(function(response) {
+          // Hide typing indicator
+          typingIndicator.css("opacity", "0");
+          
+          // Add bot response to chat (the response should already be HTML formatted from the controller)
+          chatMessages.append(`
+            <div class="message message-left">
+              <img class="message-avatar" src="{{ asset('logo.png') }}" alt="Avatar">
+              <div class="message-content">${response}</div>
+            </div>
+          `);
+          
+          scrollToBottom();
+          
+          // Re-enable input and button
+          messageInput.prop('disabled', false);
+          sendButton.prop('disabled', false);
+          messageInput.focus();
+        }).fail(function() {
+          // Hide typing indicator
+          typingIndicator.css("opacity", "0");
+          
+          // Show error message
+          chatMessages.append(`
+            <div class="message message-left">
+              <img class="message-avatar" src="{{ asset('logo.png') }}" alt="Avatar">
+              <div class="message-content">
+                <p><strong>Sorry, I'm having trouble responding right now.</strong></p>
+                <p>Please try again in a few moments or refresh the page if the problem persists.</p>
+              </div>
+            </div>
+          `);
+          
+          scrollToBottom();
+          
+          // Re-enable input and button
+          messageInput.prop('disabled', false);
+          sendButton.prop('disabled', false);
+          messageInput.focus();
+        });
+      });
+      
+      // Focus input field on page load
+      messageInput.focus();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,854 @@
+@extends('layout.general_layout')
+
+<title>@yield('title','Admin Dashboard')</title>
+ @yield('sidebar')
+  @show
+@section('content')
+ 
+<link rel="stylesheet" href="{{ asset('css/admin_dashboard.css') }}">
+ 
+
+    <!-- Main Content --> 
+    <div class="content"  style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;font-size:larger;font-weight:400">
+
+           <!-- <nav class="navbar navbar-light bg-light p-3">
+
+            <span class="navbar-brand"><i class="fas fa-chart-pie"></i> Customer Satisfaction System</span>
+            <div>
+                <button class="btn btn-outline-primary"><i class="fas fa-user"></i> Admin Profile</button>
+            </div>
+        </nav> -->
+  
+
+   
+ 
+ 
+ 
+<script>
+function updateDateTime() {
+    const now = new Date();
+
+    // Format Date (e.g., "Sunday, March 17, 2025")
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById("realDate").textContent = now.toLocaleDateString('en-US', options);
+
+    // Format Time in 12-hour format with AM/PM
+    let hours = now.getHours();
+    const minutes = now.getMinutes().toString().padStart(2, "0");
+    const seconds = now.getSeconds().toString().padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12 || 12; // Convert 24-hour format to 12-hour format
+
+    document.getElementById("realTimeClock").textContent = `${hours}:${minutes}:${seconds} ${ampm}`;
+}
+
+// Update every second
+setInterval(updateDateTime, 1000);
+updateDateTime();
+</script>
+
+
+
+<!-- <div class="dashboard-header">
+    <div class="welcome-section">
+        <h2>Welcome back, <span id="adminName">Admin</span>!</h2>
+        <p>Here's your dashboard overview</p>
+    </div>
+    
+        <div class="dashboard-stats">
+ 
+    <div class="stat">
+        <i class="fas fa-calendar-day"></i>
+        <div>
+            <span class="stat-number" id="realDate"></span>
+            <p>Current Date</p>
+        </div>
+    </div>
+ 
+    <div class="stat">
+        <i class="fas fa-clock"></i>
+        <div>
+            <span class="stat-number" id="realTimeClock"></span>
+            <p>Current Time</p>
+        </div>
+    </div>
+ 
+
+
+    </div>
+</div> -->
+ 
+
+<div class="container pt-3 pb-3">
+    <div class="dashboard-container" style="display: flex; flex-wrap: wrap;  justify-content: space-between;padding-bottom:10px">
+        
+        <!-- Top Row: 4 Cards -->
+        <div class="dashboard-card" style="flex: 1 1 calc(25% - 20px);">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div class="card-header-flex">
+                    <h2 class="card-number" id="totalOffices">0</h2>
+                </div> 
+                <div style="background-color: #4CAF50; padding: 10px; border-radius: 50%;">
+                    <img src="{{ asset('chair.svg') }}" style="width: 50px; height: 50px;">
+                </div>
+            </div>
+            <div>
+                <h5 class="card-title"><b>Our Offices</b></h5>
+                <p class="card-subtext">Total number of offices</p>
+                <a class="btn" href="{{ route('OfficeRemarks') }}"
+                    style="background-color:#4CAF50;color:white;box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);">
+                    Office Status
+                </a>
+            </div>
+        </div>
+
+        <div class="dashboard-card" style="flex: 1 1 calc(25% - 20px);">
+            <div class="card-body">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div class="card-header-flex">
+                        <h2 class="card-number" id="totalResponses">0</h2>
+                    </div> 
+                    <div style="background-color:rgb(20, 135, 217); padding: 10px; border-radius: 50%;">
+                        <img src="{{ asset('survey.svg') }}" style="width: 50px; height: 50px;">
+                    </div>
+                </div>
+                <div>
+                    <h5 class="card-title">Surveys</h5>
+                    <p class="card-subtext">Total number of surveys</p>
+                </div>
+                <a class="btn" href="{{route('survey.responses')}}" 
+                    style="background-color:rgb(20, 135, 217);color:white;box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);">
+                    Survey Responses
+                </a>
+            </div>
+        </div>
+
+    <div class="dashboard-card" style="flex: 1 1 calc(25% - 20px);">
+    <div class="card-body">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div class="card-header-flex">
+                <h2 class="card-number">{{ $positiveCount }}</h2>
+            </div>
+            <div style="background-color:rgb(253, 253, 253);   border-radius: 50%;">
+                <img src="{{ asset('like.svg') }}" style="width: 70px; height: 70px;">
+            </div>
+        </div>
+        <div>
+            <h5 class="card-title">Positive Feedback</h5>
+            <p class="card-subtext">Total number of Positive Remarks</p>
+        </div>
+        <a class="btn" href="{{ route('positive_feedbacks') }}" 
+           style="background-color:rgb(20, 135, 217); color:white; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);">
+           More Details
+        </a>
+    </div>
+</div>
+
+
+    <div class="dashboard-card" style="flex: 1 1 calc(25% - 20px);">
+    <div class="card-body">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div class="card-header-flex">
+                <h2 class="card-number">{{ $negativeCount }}</h2>
+            </div>
+            <div style="  border-radius: 50%;">
+                <img src="{{ asset('nega.svg') }}" style="width:70px; height: 70px;">
+            </div>
+        </div>
+        <div>
+            <h5 class="card-title">Concerns/Issues</h5>
+            <p class="card-subtext">Total number of Found Concerns</p>
+        </div>
+        <a class="btn btn-danger" href="{{ route('concerns_feedbacks') }}" 
+           style="  color:white; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);">
+            View Concerns
+        </a>
+    </div>
+</div>
+
+    </div>
+
+    <!-- Bottom Row: 2 Cards -->
+    <div class="dashboard-container" style="display: flex; flex-wrap: wrap;  justify-content: space-between;padding-top:5px ">
+
+        <!-- Satisfaction Rate -->
+            <div class="dashboard-card" style="flex: 1 1 calc(50% - 10px);">
+                <div class="card-body">
+                    <div style="display: flex; align-items: center; justify-content: space-between; height:50px">
+                        <div class="card-header-flex">
+                            <h2 class="card-number" id="satisfactionRate">0%</h2>
+                        </div>
+                        <div class="icon-container"  >
+                            <div style="display: flex; justify-content: center; margin-top: 20px;">
+                             <p id="satisfactionText" style="font-size: 30px; font-weight:500; color:rgb(8, 8, 8); margin-top: 10px; margin-right:10px"></p>
+    <div style="
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background-color:rgb(255, 255, 255);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+       
+    ">
+        <div id="faceIcon" style="width: 50px; height: 50px;"></div>
+
+    </div>
+</div>
+  </div>
+                        <!-- <div style="box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); border:1px solid #ccc; background-color:rgb(249, 251, 255); padding: 15px; border-radius: 50%;">
+                            <img src="{{ asset('stats.svg') }}" style="width: 40px; height: 40px;">
+                        </div> -->
+                    </div>
+                    <h5 class="card-title">Overall Rating</h5>
+                    <p class="card-subtext">Percentage of satisfied users</p>
+                    
+                    <a class="btn btn-primary"
+                        style="background-color:rgb(16, 90, 208); border:1px solid #ccc; color:white; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);"
+                        href="{{route('OfficeRemarks')}}">Office Ratings</a>
+                </div>
+            </div>
+
+        <!-- Date, Quarter, Year -->
+        <div class="dashboard-card" style="flex: 1 1 calc(50% - 10px);">
+            <div class="card-body">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div class="card-header-flex">
+                        <h5 id="currentDate" class="mb-1 fw-bold" style="font-size: 1.2rem;"></h5>
+                    </div>
+                    <div style="background-color:rgb(254, 254, 254); padding: 10px; border-radius: 50%;">
+                        <img src="{{ asset('calendar.svg') }}" style="width: 70px; height: 70px;">
+                    </div>
+                </div>
+                <p id="currentQuarterYear" style="font-size: 1rem; color: #555;"></p>
+                <div id="realtimeClock"
+                    style="font-size: 1.3rem; font-weight: 500; color: black; border-radius: 8px; display: inline-block; letter-spacing: 4px; text-transform:lowercase;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    @if($total_responses != 0)
+
+    <style>
+        .card{
+            padding:10px;
+           
+            margin-bottom: 20px;
+            background-color: white;
+          
+        }
+    </style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class="card">
+    <h4 class="csm-title text-center m-3">
+  <i></i>  
+  
+  
+  <style>
+    .svg {
+        width: 100%;
+        max-width: 50px;
+        height: auto;
+    }
+
+    @media (max-width: 576px) {
+        .svg {
+            max-width: 50px;  /* Smaller image for mobile */
+        }
+    }
+</style>
+
+    <img class="svg" src="{{ asset('title-rating2.svg') }}" alt="SVG Image" >
+ &nbsp; Customer Satisfaction Measurement Office Rankings
+</h4>
+<div style="width: 100%;">
+    <!-- Legend on top -->
+    <div class="mb-3">
+        <h6 class="mb-2"><strong> Legend</strong></h6>
+        <div class="d-flex flex-wrap gap-3">
+      
+          
+            <div class="d-flex align-items-center">
+                <div style="width: 20px; height: 20px; background-color: #F44336;" class="me-2 border rounded"></div>
+                <span>Below 60.0%% (Poor)</span>
+            </div>
+            <div class="d-flex align-items-center">
+                <div style="width: 20px; height: 20px; background-color: #FF9800;" class="me-2 border rounded"></div>
+                <span>60.0% - 79.9% (Fair)</span>
+            </div>
+            <div class="d-flex align-items-center">
+                <div style="width: 20px; height: 20px; background-color: #8BC34A;" class="me-2 border rounded"></div>
+                <span>80.0% - 94.9% (Satisfactory)</span>
+            </div>
+            <div class="d-flex align-items-center">
+                <div style="width: 20px; height: 20px; background-color: #4CAF50;" class="me-2 border rounded"></div>
+                <span>95.0% - 100% (Outstanding)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Graph -->
+    <div style="height: 200px; width:100%;">
+        <canvas id="officeRankChart" style="width: 100%;" height="200"></canvas>
+    </div>
+</div>
+ 
+
+    <div class="table-responsive">
+        <table class="table table-bordered text-start"  style="font-size:18px">
+            <thead class="table-dark" >
+                <tr>
+                    <th style="background-color: rgb(3, 45, 95);border:non;font-size:18px">Rank</th>
+                    <th style="background-color: rgb(3, 45, 95);border:none;font-size:18px">Office Name</th>
+                    <th style="background-color: rgb(3, 45, 95);border:none;font-size:18px">Responses</th>
+                    <th style="background-color: rgb(3, 45, 95);border:none;font-size:18px"> Score</th> 
+                    <th style="background-color: rgb(3, 45, 95);border:none;font-size:18px">Analysis</th> 
+                </tr>
+            </thead>
+            <tbody id="offices-table" style="font-size:18px">
+                <!-- Data will be loaded here -->
+            </tbody>
+        </table>
+    </div>
+ 
+</div>
+<div class="card">
+<h4 class="csm-title text-center m-3">
+
+      <img class="svg" src="{{ asset('title-rating2.svg') }}" alt="SVG Image" >
+ &nbsp;   Service Quality Dimension - Top Offices
+</h4> 
+<table class="table table-bordered">
+    <thead>
+        <tr  >
+            <th style="background-color: rgb(3, 45, 95);border:none;color:white;font-size:18px">SQD</th>
+            <th style="background-color: rgb(3, 45, 95);border:none;color:white;font-size:18px">Content</th>
+            <th style="background-color: rgb(3, 45, 95);border:none;color:white;font-size:18px">Description</th>
+
+            <th style="background-color: rgb(3, 45, 95);border:none;color:white;font-size:18px">Top Office</th>
+            <th style="background-color: rgb(3, 45, 95);border:none;width: 200px;color:white;font-size:18px"  >Score</th> 
+            <th style="background-color: rgb(3, 45, 95);border:none;width: 200px;color:white;font-size:18px"  >Analysis</th> 
+
+        </tr>
+    </thead>
+   
+    <tbody id="topOfficesTableBody">
+        <!-- Data will be inserted here dynamically -->
+    </tbody>
+  
+</table>
+</div>
+ 
+ 
+ <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        loadTopOfficesPerSQD(); // Load initially
+        setInterval(loadTopOfficesPerSQD, 10000); // Refresh every 10 seconds (10,000 ms)
+    });
+
+    function loadTopOfficesPerSQD() {
+        fetch('Admin/top-offices-per-sqd')
+            .then(response => response.json())
+            .then(data => {
+                if (!data.topOfficesPerSQD || Object.keys(data.topOfficesPerSQD).length === 0) {
+                    document.getElementById('topOfficesTableBody').innerHTML =
+                        `<tr><td colspan="5" class="text-center">No data available</td></tr>`;
+                    return;
+                }
+
+                let tableBody = '';
+                for (let sqd in data.topOfficesPerSQD) {
+                    let office = data.topOfficesPerSQD[sqd];
+                    if (office) {
+                        let scorePercentage = (office.score * 100).toFixed(2);
+                        let interpretation = getScoreInterpretation(office.score, office.office_name, sqd);
+
+                        tableBody += `
+                        <tr>
+                            <td style="font-size:18px">${sqd.toUpperCase()}</td>
+                            <td style="font-size:18px;width:130px">
+                                ${ 
+                                    sqd === 'sqd1' ? 'Responsiveness' :
+                                    sqd === 'sqd2' ? 'Reliability' :
+                                    sqd === 'sqd3' ? 'Access and Facilities' :
+                                    sqd === 'sqd4' ? 'Communication' :
+                                    sqd === 'sqd5' ? 'Costs' :
+                                    sqd === 'sqd6' ? 'Integrity' :
+                                    sqd === 'sqd7' ? 'Assurance' :
+                                    sqd === 'sqd8' ? 'Outcome' :
+                                    sqd.toUpperCase()
+                                }
+                            </td>
+                                <td style="font-size:18px;width:270px">
+                                ${ 
+                                    sqd === 'sqd1' ? 'The willingness to help, assist, and provide prompt service to citizens/clients.' :
+                                    sqd === 'sqd2' ? 'The provision of what is needed and what was is promised, following the policy and standards, with zero to a minimal error rate.' :
+                                    sqd === 'sqd3' ? 'The convinience of location, sample ammenities for comfortable transactions, use of clear signages, and modes of techhnology.' :
+                                    sqd === 'sqd4' ? 'The act of keeping citizens and clients informed in a language they can easilty understand, as well as listening to their feedback.' :
+                                    sqd === 'sqd5' ? 'The satisfaction with timeliness of the billing, billing process/es, preffered methods of payment, reasonable payment period, value of money, the acceptable range of costs adn qualitative information on the cost of each service.' :
+                                    sqd === 'sqd6' ? 'The assurance that there is honestly, justice, fairness, and trust in each service while dealing with the citizens/clients.' :
+                                    sqd === 'sqd7' ? 'The capability  of frontline staff to perform their duties, product and service knowledge, understand citizen/client needs, helpfulnesss, and good work relationships.' :
+                                    sqd === 'sqd8' ? 'The externt of achieving outcomes or realizing the intended benefits of government services.' :
+                                    sqd.toUpperCase()
+                                }
+                            </td>
+                            <td style="font-size:18px">${office.office_name}</td>
+                            <td style="font-size:18px">
+                                <span class="score-value" style="font-size:18px">${scorePercentage}%</span>
+                                <div class="score-bar-container">
+                                    <div class="score-bar" style="width: ${scorePercentage}%; background-color: ${getColorForScore(scorePercentage)};"></div>
+                                </div>
+                            </td>
+                            <td style="font-size:18px" class="analysis-text">${interpretation}</td>  <!-- Interpretation Column -->
+                        </tr>`;
+                    }
+                }
+                document.getElementById('topOfficesTableBody').innerHTML = tableBody;
+            })
+            .catch(error => console.error("Error fetching data:", error));
+    }
+
+    function getColorForScore(score) {
+        if (score < 60) return '#F44336'; 
+            // Red
+        else if (score >=60 && score <=79.9) return '#FF9800'; // Orange
+
+        else if (score >=80 && score <=94.9) return '#8BC34A'; // Orange
+
+         else if (score >= 95 && score <=100 ) return '#4CAF50'; 
+
+    }
+
+    // Function to provide interpretation based on score
+    function getScoreInterpretation(score, officeName, sqd) {
+        let categoryName = 
+            sqd === 'sqd1' ? 'Responsiveness' :
+            sqd === 'sqd2' ? 'Reliability' :
+            sqd === 'sqd3' ? 'Access and Facilities' :
+            sqd === 'sqd4' ? 'Communication' :
+            sqd === 'sqd5' ? 'Costs' :
+            sqd === 'sqd6' ? 'Integrity' :
+            sqd === 'sqd7' ? 'Assurance' :
+            sqd === 'sqd8' ? 'Outcome' : 
+            'Unknown Category';
+
+        let scorePercentage = (score * 100).toFixed(2);
+
+        if (score <= 0.20) {
+            return `Based on the data sample, the ${officeName} received a ${scorePercentage}% in the ${categoryName} category, indicating a very poor level of performance, requiring immediate improvement. <strong>Action Required</strong>`;
+        } else if (score <= 0.40) {
+            return `Based on the data sample, the ${officeName} received a ${scorePercentage}% in the ${categoryName} category, indicating below-average performance, with significant improvements needed. <strong>Priority Action</strong>`;
+        } else if (score <= 0.60) {
+            return `Based on the data sample, the ${officeName} received a ${scorePercentage}% in the ${categoryName} category, indicating average performance, but improvement is necessary. <strong>Monitor Performance</strong>`;
+        } else if (score <= 0.80) {
+            return `Based on the data sample, the ${officeName} received a ${scorePercentage}% in the ${categoryName} category, indicating above-average performance, with some room for growth. <strong>Good but room for growth</strong>`;
+        } else {
+            return `Based on the data sample, the ${officeName} received a ${scorePercentage}% in the ${categoryName} category, indicating excellent performance, addressing client needs effectively. <strong>Outstanding</strong>`;
+        }
+    }
+</script>
+
+
+ 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        loadOverallScore(); // Initial load of overall score
+        setInterval(loadOverallScore, 10000); // Refresh every 10 seconds (10,000 ms)
+    });
+
+    function loadOverallScore() {fetch('Admin/overall-score2')
+    .then(response => response.json())
+    .then(data => {
+        const score = data.overallScore;
+        const satisfactionRate = (score * 100).toFixed(2);
+        document.getElementById("satisfactionRate").textContent = satisfactionRate + "%";
+
+        let satisfactionText = '';
+        let iconPath = '';
+
+        if (score < 0.60) {
+            satisfactionText = 'Poor';
+            iconPath = '{{ asset("poor.svg") }}';
+            document.getElementById('satisfactionText').style.color = '#F44336';
+        } else if (score >= 0.60 && score < 0.80) {
+            satisfactionText = 'Fair';
+            iconPath = '{{ asset("fair.svg") }}';
+            document.getElementById('satisfactionText').style.color = '#FF9800';
+        } else if (score >= 0.80 && score < 0.95) {
+            satisfactionText = 'Satisfactory';
+            iconPath = '{{ asset("smile2.svg") }}';
+            document.getElementById('satisfactionText').style.color = '#4CAF50';
+        } else {
+            satisfactionText = 'Outstanding';
+            iconPath = '{{ asset("smile.svg") }}';
+            document.getElementById('satisfactionText').style.color = '#388E3C';
+        }
+
+        document.getElementById('satisfactionText').textContent = satisfactionText;
+
+        // Fetch and insert the SVG
+        fetch(iconPath)
+            .then(res => res.text())
+            .then(svg => {
+                document.getElementById("faceIcon").innerHTML = svg;
+            });
+    });
+}
+</script>
+
+ 
+<script> 
+function fetchRankedOffices() {
+    fetch('Admin/api/ranked-offices')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("Fetched data:", data); // Debugging
+
+            // Ensure the data format is correct
+            if (!data || !data.rankedOffices) {
+                throw new Error("Invalid data format received");
+            }
+
+            // Update total offices
+            
+            document.getElementById("totalOffices").textContent = (data.totalOffices || 0) ;
+            // Update total survey responses
+            document.getElementById("totalResponses").textContent = data.totalSurveyResponses || 0;
+
+            // Load ranked offices into the table
+            let tableBody = document.getElementById('offices-table');
+            tableBody.innerHTML = ''; // Clear previous data
+
+            data.rankedOffices.forEach((office, index) => {
+                let scorePercentage = (office.overall_score * 100).toFixed(2);
+                let analysis = getAnalysisForScore(office, scorePercentage);
+
+                let row = `
+                    <tr >
+                        <td style="font-size:18px"><strong>${index + 1}</strong></td>
+                        <td style="font-size:18px">${office.office_name}</td>
+                        <td style="font-size:18px">${office.total_responses}</td>
+                        <td style="font-size:18px" class="text-primary fw-bold">${scorePercentage}%</td>
+                        <td style="font-size:18px" class="analysis-text">${analysis}</td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching ranked offices:', error);
+            // alert("Failed to load office rankings. Check console for details.");
+        });
+};
+
+// Function to interpret the score for each office and generate a customized message
+function getAnalysisForScore(office, scorePercentage) {
+    let analysis = '';
+
+    if (scorePercentage == 100) {
+        analysis = `Based on the data sample, the ${office.office_name} received a <strong> 100.00% </strong> in the content category, indicating an excellent level of performance in addressing the needs and concerns of clients.`;
+    } else if (scorePercentage <= 20) {
+        analysis = `The ${office.office_name} received a <strong> ${scorePercentage}% </strong>  in the content category, showing a significant underperformance and highlighting the need for immediate improvement.`;
+    } else if (scorePercentage <= 40) {
+        analysis = `The ${office.office_name} scored <strong> ${scorePercentage}%  </strong> in the content category, indicating below expectations. Efforts should be made to enhance performance.`;
+    } else if (scorePercentage <= 60) {
+        analysis = `The ${office.office_name} achieved a <strong> ${scorePercentage}% </strong> in the content category, meeting expectations. However, further improvement is recommended for optimal performance.`;
+    } else if (scorePercentage <= 80) {
+        analysis = `The ${office.office_name} received a <strong>  ${scorePercentage}% </strong> in the content category, indicating above expectations. It’s a good performance, but there's still room for further improvement.`;
+    } else {
+        analysis = `The ${office.office_name} received a <strong> ${scorePercentage}% </strong> in the content category, demonstrating outstanding performance and exceeding expectations.`;
+    }
+
+    return analysis;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    fetchRankedOffices();
+    setInterval(fetchRankedOffices, 5000); // Refresh every 5 seconds
+});
+</script>
+
+ 
+
+
+
+
+
+<script>
+    let officeChart;  
+    function getColorForScore(score) {
+        if (score < 60) return '#F44336'; 
+            // Red
+        else if (score >=60 && score <=79.9) return '#FF9800'; // Orange
+
+        else if (score >=80 && score <=94.9) return '#8BC34A'; // Orange
+
+         else if (score >= 95 && score <=100 ) return '#4CAF50'; 
+
+                 }
+
+
+                 
+
+    function fetchAndUpdateChart() {
+        fetch('Admin/api/ranked-offices')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (!data || !data.rankedOffices) {
+                    throw new Error("Invalid data format received");
+                }
+
+                // Update totals
+                document.getElementById("totalOffices").textContent = data.totalOffices || 0;
+                document.getElementById("totalResponses").textContent = data.totalSurveyResponses || 0;
+
+                // Prepare chart data
+                const officeNames = data.rankedOffices.map(office => office.office_name);
+                const officeScores = data.rankedOffices.map(office => office.overall_score * 100);
+                const backgroundColors = officeScores.map(score => getColorForScore(score));
+
+                 // Create or update the chart
+                const ctx = document.getElementById('officeRankChart').getContext('2d');
+                if (!officeChart) {
+                    officeChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: officeNames,
+                            datasets: [{
+                                label: 'Satisfaction Rate (%)',
+                                data: officeScores,
+                                backgroundColor: backgroundColors,
+                                borderColor: backgroundColors,
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    max: 100,
+                                    ticks: {
+                                        stepSize: 20
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    // Update chart data
+                    officeChart.data.labels = officeNames;
+                    officeChart.data.datasets[0].data = officeScores;
+                    officeChart.data.datasets[0].backgroundColor = backgroundColors;
+                    officeChart.data.datasets[0].borderColor = backgroundColors;
+                    officeChart.update();
+                }
+
+               // Load ranked offices into the table
+            let tableBody = document.getElementById('offices-table');
+            tableBody.innerHTML = ''; // Clear previous data
+
+            data.rankedOffices.forEach((office, index) => {
+                let scorePercentage = (office.overall_score * 100).toFixed(2);
+                let analysis = getAnalysisForScore(office, scorePercentage);
+
+                let row = `
+                    <tr>
+                        <td><strong>${index + 1}</strong></td>
+                        <td>${office.office_name}</td>
+                        <td>${office.total_responses}</td>
+                        <td class="text-primary fw-bold">${scorePercentage}%</td>
+                        <td class="analysis-text">${analysis}</td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+           
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching ranked offices:', error);
+            });
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        fetchAndUpdateChart(); // Initial fetch
+        setInterval(fetchAndUpdateChart, 5000); // Fetch every 5 seconds
+    });
+</script>
+<script>
+    function updateClock() {
+        const clock = document.getElementById('realtimeClock');
+        const now = new Date();
+        const time = now.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+        });
+        clock.textContent = time;
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock(); // initial call
+</script>
+<!-- Date Script -->
+<script>
+    function getQuarter(month) {
+        return Math.floor(month / 3) + 1;
+    }
+
+    function updateDateCard() {
+        const now = new Date();
+        
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const formattedDate = now.toLocaleDateString('en-US', options);
+
+        const quarter = getQuarter(now.getMonth());
+        const year = now.getFullYear();
+
+        document.getElementById('currentDate').textContent = formattedDate;
+        document.getElementById('currentQuarterYear').textContent = `Quarter ${quarter} of ${year}`;
+    }
+
+    updateDateCard();
+</script>
+        <!-- Charts Section -->
+        <!-- <div class="row mt-4">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-chart-line"></i> Satisfaction Trends</h5>
+                        <canvas id="satisfactionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            
+        </div> -->
+    </div>
+
+
+
+    @else
+    <style>
+    img {
+        width: 100%;
+        max-width: 400px;
+        height: auto;
+    }
+
+    @media (max-width: 576px) {
+        img {
+            max-width: 200px;  /* Smaller image for mobile */
+        }
+    }
+</style>
+    <img src="{{ asset('undraw_users-per-minute_eg97.svg') }}" alt="SVG Image" >
+    <div class="card-subtext">No responses for {{ now()->format('F Y') }}.</div>
+@endif
+
+
+
+
+@endsection
+
+<!-- Chart.js Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('satisfactionChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+            datasets: [{
+                label: 'Satisfaction Rate (%)',
+                data: [80, 85, 83, 87, 90],
+                borderColor: 'blue',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+</script>
+<!-- 
+public function getTopOfficesPerSQD()
+{
+    $sqdColumns = ['sqd1', 'sqd2', 'sqd3', 'sqd4', 'sqd5', 'sqd6', 'sqd7', 'sqd8'];
+    $offices = MainOffice::all();
+
+    $topOffices = [];
+
+    foreach ($sqdColumns as $sqd) {
+        $topOffice = null;
+        $highestScore = 0;
+        $currentMonth = Carbon::now()->month; // Example: 4 for April
+        $currentYear = Carbon::now()->year;   // Example: 2025
+        
+        foreach ($offices as $office) {
+            
+              $responses = survey_responses::where('main_office', $office->office_name)
+            ->whereMonth('created_at', $currentMonth)
+            ->whereYear('created_at', $currentYear)
+            ->get();
+            $count5 = $responses->where($sqd, 5)->count();
+            $count4 = $responses->where($sqd, 4)->count();
+            $countNA = $responses->where($sqd, 'N/A')->count();
+            $totalResponses = $responses->count();
+            $validResponses = $totalResponses - $countNA;
+
+            // Calculate SQD Score
+            $sqdScore = ($validResponses > 0) ? ($count5 + $count4) / $validResponses : 0;
+
+            // Check if this office has the highest score for this SQD
+            if ($sqdScore > $highestScore) {
+                $highestScore = $sqdScore;
+                $topOffice = [
+                    'office_name' => $office->office_name,
+                    'score' => $sqdScore
+                ];
+            }
+        }
+
+        $topOffices[$sqd] = $topOffice;
+    }
+
+
+
+
+
+
+    return response()->json([
+        'topOfficesPerSQD' => $topOffices
+    ]);
+} -->

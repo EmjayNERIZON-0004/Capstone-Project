@@ -1,0 +1,387 @@
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Welcome Section */
+.welcome-section h2 {
+    font-size: 22px;
+    font-weight: bold;
+    margin: 0;
+    color: #222;
+}
+.welcome-section p {
+    font-size: 14px;
+    color: #666;
+    margin: 5px 0 0;
+}
+
+/* Stats Section */
+.stats-section {
+    display: flex;
+    gap: 30px;
+}
+.stat {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.stat i {
+    font-size: 32px;
+    color: #333;
+}
+.stat-number {
+    font-size: 20px;
+    font-weight: bold;
+    color: #222;
+}
+.stat p {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+ 
+/* Responsive */
+@media (max-width: 768px) {
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .stats-section {
+        flex-direction: column;
+        gap: 15px;
+    }
+}
+/* Title Styling */
+.csm-title {
+    font-weight: bold;
+    font-size: 1.8rem; /* Adjust size */
+    color: rgb(3, 45, 95); /* Dark Blue */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 0px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+}
+
+/* Add an icon effect */
+ 
+
+/* Responsive */
+@media (max-width: 600px) {
+    .csm-title {
+        font-size: 1.5rem; /* Smaller on mobile */
+    }
+    .csm-title i {
+        font-size: 1.4rem;
+    }
+}
+
+.score-bar-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+.score-bar {
+    height: 20px;
+    background:rgb(9, 107, 211); /* Green */
+    border-radius: 5px;
+    transition: width 0.5s ease-in-out;
+}
+.score-text {
+    margin-left: 10px;
+    font-weight: bold;
+    font-size: 14px;
+    white-space: nowrap;
+}
+.score-value {
+    font-weight: normal;
+    font-size: 16px;
+    letter-spacing: 1.5px;
+    margin-right: 5px;
+}
+
+.analysis-text {
+    font-style:normal;
+    font-weight: normal;
+    padding: 10px;
+    font-family: 'Source Sans Pro', sans-serif;
+    border-radius: 4px;
+    color: #333;
+    background-color: #f7f7f7;
+    text-align: left;
+}
+
+.analysis-text strong {
+    color: #007bff; /* You can change the color of 'Action Required', 'Priority Action', etc. */
+}
+      
+.dashboard-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+    padding: 20px;
+}
+
+/* Card Design */
+.dashboard-card {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid lightgray;
+    
+    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+    padding: 16px;
+    text-align: left;
+    position: relative;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Accent Lines */
+.card-top-line {
+    height: 4px;
+    width: 40px;
+    background-color: #007bff;
+    border-radius: 2px;
+    margin-bottom: 5px;
+}
+
+.card-sub-line {
+    height: 4px;
+    width: 20px;
+    background-color: #007bff;
+    border-radius: 2px;
+    margin-bottom: 8px;
+}
+
+/* Large Numbers */
+.card-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #111;
+    transition: font-size 0.3s ease-in-out;
+}
+
+/* Subtext */
+.card-subtext {
+    font-size: 0.9rem;
+    color: #b0b0b0;
+    font-weight: 500;
+    transition: font-size 0.3s ease-in-out;
+}
+
+/* Floating Effect */
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive Styles */
+
+/* Adjust for tablets */
+@media (max-width: 768px) {
+.dashboard-card h5 {
+font-size: 16px;
+}
+
+.card-number {
+font-size: 1.75rem;
+}
+
+.card-subtext {
+font-size: 0.8rem;
+}
+
+.dashboard-card i {
+font-size: 1.3rem;
+}
+
+.dashboard-card .btn {
+font-size: 0.9rem;
+padding: 6px 12px;
+}
+}
+
+/* Adjust for mobile screens */
+@media (max-width: 576px) {
+.dashboard-container {
+grid-template-columns: 1fr; /* Stack cards vertically */
+}
+
+.dashboard-card {
+padding: 12px;
+}
+
+.dashboard-card h5 {
+font-size: 14px;
+}
+
+.card-number {
+font-size: 1.5rem;
+}
+
+.card-subtext {
+font-size: 0.75rem;
+}
+
+.dashboard-card i {
+font-size: 1.2rem;
+}
+
+.dashboard-card .btn {
+font-size: 0.8rem;
+padding: 5px 10px;
+}
+}
+
+/* Default text size */
+table th, table td {
+font-size: 18px;
+}
+
+/* Adjust for medium screens (tablets) */
+@media (max-width: 768px) {
+table th, table td {
+font-size: 14px;
+}
+}
+
+/* Adjust for small screens (mobile) */
+@media (max-width: 576px) {
+table th, table td {
+font-size: 12px; /* Reduce text size */
+}
+.table-responsive {
+overflow-x: auto; /* Allow scrolling */
+}
+}
+
+    /* Align title (left) and number (right) */
+    .card-header-flex {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .card-title {
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        gap: 5px; /* Space between icon and text */
+    }
+    
+    .card-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #111;
+    }
+    .dashboard-title {
+        font-weight: bold;
+        font-size: 2rem; /* Adjust size */
+        color: rgb(3, 45, 95); /* Dark Blue */
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 15px 0;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px; /* Space between icon and text */
+        border-bottom: 3px solid #007bff; /* Add a bottom border */
+    }
+    
+    /* Icon Styling */
+    .dashboard-title i {
+        color: #007bff; /* Blue accent */
+        font-size: 1.8rem;
+    }.dashboard-stats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+    
+        .stat {
+            display: flex;
+            align-items: center;
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 15px 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: 0.3s ease-in-out;
+            min-width: 250px;
+        }
+    
+        .stat:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+    
+        .stat-icon {
+            font-size: 24px;
+            color: #007bff;
+            margin-right: 15px;
+        }
+    
+        .stat-info {
+            display: flex;
+            flex-direction: row;
+        }
+    
+        .stat-number {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+    
+        .stat-label {
+            font-size: 14px;
+            color: #777;
+        }
+    
+    /* Responsive */
+    @media (max-width: 900px) {
+        .dashboard-title {
+            font-size: 1.2rem; /* Smaller on mobile */
+        }
+        .dashboard-title i {
+            font-size: 1.4rem;
+        }
+        .dashboard-stats {
+            flex-direction: row;
+            flex-wrap: wrap; /* Ensures wrapping */
+            justify-content: space-between;
+            gap: 5px;
+        }
+    
+        .stat {
+        width: 48% !important; /* Force width for side-by-side */
+        padding: 8px !important;
+        font-size: 10px !important;
+    }
+    
+    .stat i {
+        font-size: 14px !important; /* Smaller icon */
+        margin-right: 5px !important;
+    }
+    
+    .stat-number {
+        font-size: 14px !important;
+    }
+    
+    .stat p {
+        font-size: 10px !important;
+    }
+    
+    
+    }
