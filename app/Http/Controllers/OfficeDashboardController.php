@@ -13,6 +13,46 @@ use Illuminate\Support\Facades\Auth; // If you are using authentication
 
 class OfficeDashboardController extends Controller
 {       
+
+
+
+public function profile()
+{
+    $officeId = session('office_id');
+
+    $office = MainOffice::where('office_id', $officeId)->first();
+
+    if (!$office) {
+        return redirect()->back()->with('error', 'Office not found.');
+    }
+
+    return view('OfficeView.OfficeProfile', compact('office'));
+}
+
+ public function upload(Request $request)
+    {
+        $request->validate([
+            'profile_image' => 'required|image|max:2048',
+        ]);
+
+        $office = MainOffice::where('office_id', session('office_id'))->firstOrFail();
+
+        // Delete old image if exists
+        if ($office->image_path && file_exists(public_path('images/' . $office->image_path))) {
+            unlink(public_path('images/' . $office->image_path));
+        }
+
+        // Save new image
+        $file = $request->file('profile_image');
+        $filename =   $file->getClientOriginalExtension();
+        $file->move(public_path('images'), $filename);
+
+        // Update DB
+        $office->image_path = $filename;
+        $office->save();
+
+        return redirect()->back()->with('success', 'Profile image updated successfully.');
+    }
     public function officeQRCodes()
     {
         $officeName = session('office_id'); // Get current office name from session
