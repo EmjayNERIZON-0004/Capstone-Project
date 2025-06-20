@@ -4,7 +4,7 @@
    
 <link rel="stylesheet" href="{{ asset('css/admin_dashboard.css') }}">
    
-    <div class="container mt-4 mb-4">
+    <div class="container mt-0 mb-0">
 <!-- Accounts Status Dashboard -->
 <div class="container mt-4 mb-4">
   
