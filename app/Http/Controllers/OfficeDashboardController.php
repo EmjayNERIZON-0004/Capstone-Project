@@ -119,6 +119,12 @@ public function profile()
         $responses_count = $responses->count();
      
 
+$startOfYear = Carbon::now()->startOfYear();
+$now = Carbon::now();
+
+$overall_responses_count = survey_responses::where('main_office', $officeName)
+    ->whereBetween('created_at', [$startOfYear, $now])
+    ->count();
 
         $years_cb = survey_responses::selectRaw('YEAR(created_at) as year')
         ->distinct()
@@ -129,14 +135,43 @@ public function profile()
         ->distinct()
         ->orderBy('quarter')
         ->pluck('quarter');
-    
-        // Return the view with data
-        return view('OfficeView.OfficeSurveyResponse')
-            ->with('responses', $responses)
-            ->with('years_cb', $years_cb)
-            ->with('quarter_cb', $quarter_cb)
-            ->with('subOffices', $subOffices)
-            ->with('responses_count', $responses_count);
+
+$currentYear = Carbon::now()->format('F j, Y');
+
+
+
+
+ $currentYear = Carbon::now()->year;
+    $quarterCounts = [];
+
+    for ($q = 1; $q <= 4; $q++) {
+        $start = Carbon::createFromDate($currentYear)->startOfYear()->addQuarters($q - 1)->startOfQuarter();
+        $end = (clone $start)->endOfQuarter();
+
+        $count = survey_responses::where('main_office', $officeName)
+            ->whereBetween('created_at', [$start, $end])
+            ->count();
+
+        $quarterCounts[] = $count;  // Only the count (you can use assoc arrays if you prefer)
+    }
+
+ 
+     
+
+
+
+
+
+  return view('OfficeView.OfficeSurveyResponse', [
+    'responses' => $responses,
+    'years_cb' => $years_cb,
+    'quarter_cb' => $quarter_cb,
+    'subOffices' => $subOffices,
+    'responses_count' => $responses_count,
+    'currentYear' => $currentYear,
+    'overall_responses_count' => $overall_responses_count,
+    'quarterCounts' => $quarterCounts   
+]);
     }
     
     public function getServices($subOfficeName) { 
@@ -175,7 +210,14 @@ public function profile()
 $responses = survey_responses::where('main_office', $officeName)
             ->whereBetween('created_at', [$startOfQuarter, $endOfQuarter])
                            ->get(); 
-                           
+                
+$startOfYear = Carbon::now()->startOfYear();
+$now = Carbon::now();
+
+$responses_count = survey_responses::where('main_office', $officeName)
+    ->whereBetween('created_at', [$startOfYear, $now])
+    ->count();
+        
                            // Use paginate(10) if needed
         foreach ($responses as $response) {
             $values = [
@@ -193,7 +235,7 @@ $responses = survey_responses::where('main_office', $officeName)
                 $sqd_counts[$index] += 1;
             }
         }
-      
+       
        
         return view('OfficeView.OfficeDashboard', compact('responses', 'officeName','sqd_totals', 'sqd_counts'));
     }

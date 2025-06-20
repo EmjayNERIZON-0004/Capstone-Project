@@ -3,6 +3,7 @@
 @section('content')
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
+  
   <style>
     :root {
       --primary: #3498db;
@@ -17,6 +18,7 @@
    
     
     .dashboard-container {
+      font-family:Verdana, Geneva, Tahoma, sans-serif;
       max-width: 1200px;
       margin: auto;
     }
@@ -43,54 +45,31 @@
       box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
     
-    .cards-row {
-      display: flex;
-      gap: 20px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
+   
     
-    .card {
-      flex: 1;
-      min-width: 180px;
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
+     
     
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-    }
+  
     
-    .card h4 {
-      margin: 0 0 10px;
-      font-size: 14px;
-      color: #777;
-      font-weight: 500;
-    }
     
-    .card p {
-      font-size: 28px;
-      margin: 0;
-      color: #333;
-      font-weight: 600;
-    }
     
-    .card .trend {
-      font-size: 12px;
-      margin-top: 10px;
-    }
-    
-    .card .positive {
-      color: var(--success);
-    }
-    
-    .card .negative {
-      color: var(--danger);
-    }
+     
+  .card .positive {
+    margin-top: 10px;
+  color: white;
+  background-color: #198754; /* Bootstrap success color */
+  padding: 3px;
+  border-radius: 5px;
+}
+
+.card .negative {
+   margin-top: 4px;
+  color: white; 
+   background-color: #dc3545; /* Bootstrap success color */
+  padding: 3px;
+  border-radius: 5px;
+}
+
     
     .chart-container {
       background: white;
@@ -223,55 +202,225 @@
 </head>
 <body>
   <div class="dashboard-container">
-    <div class="header">
-      <h1>Section Performance Dashboard</h1>
-      <div class="time-period" id="timePeriod">Last Updated: --</div>
+<div style="
+    background-color: #ffffff;
+    color: #212529;
+    padding: 20px 28px;
+    border-left: 4px solid #0d6efd;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    border-radius: 8px;
+    margin: 16px 0;
+">
+    <div style="font-size: 26px; font-weight: 600; margin-bottom: 6px;">
+        Survey Responses List
     </div>
-    
+    <div style="font-size: 15px; color: #6c757d;">
+        All recorded customer survey submissions within the selected period (Quarterly)
+    </div>
+</div>
+          <div class="time-period" id="timePeriod">Last Updated: --</div>
     <!-- Key performance indicators -->
-    <div class="cards-row">
-      <div class="card primary-card">
-        <h4>Current Overall Score</h4>
-        <p id="currentScore">--</p>
-        <div class="trend" id="scoreTrend"></div>
-      </div>
-      
-      <div class="card">
-        <h4>Total Survey Responses</h4>
-        <p id="totalResponses">--</p>
-        <div class="trend" id="responseTrend"></div>
-      </div>
-      
-      <div class="card">
-        <h4>Response Rate</h4>
-        <p id="responseRate">--</p>
-        <div class="trend" id="rateChange"></div>
-      </div>
-      
-      <div class="card">
-        <h4>Average Rating</h4>
-        <p id="avgRating">--</p>
-        <div class="trend" id="avgRatingChange"></div>
-      </div>
-    </div>
     
-    <!-- Rating distribution cards -->
-    <div class="cards-row">
-      <div class="card">
-        <h4>5-Star Ratings</h4>
-        <p id="total5s">--</p>
-        <div class="trend" id="trend5s"></div>
-      </div>
-      
-      <div class="card">
-        <h4>4-Star Ratings</h4>
-        <p id="total4s">--</p>
-        <div class="trend" id="trend4s"></div>
-      </div>
-      
+    
+<div class="row mb-1">
+
+     <div class="col-md-4 col-sm-6 mb-3">
+            <div class="card border-left-success h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="row no-gutters  ">
+                        <div class="col-auto"  >
+                      <div class="col-auto align-self-start"  >
+  <div style="background-color:rgb(10, 148, 63);border-radius:50px;padding:10px">
+    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="white" class="bi bi-check-circle" viewBox="0 0 16 16">
+      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+      <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+    </svg>
+  </div>
+</div> </div>
+                        <div class="col ml-3">
+                    <div class="text-lg   text-success   mb-1" style="font-size:24px;  ">  Overall Rating  </div>
+                    <div class="output-year text-muted"  >  </div>
+                            <div class="h4 mb-2 font-weight-bold text-gray-800" style="font-weight: bold;" id="overallRating"> </div>
+                                        <!-- <div class="trend" id="avgRatingChange"></div> -->
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Submitted Services Card -->
+        <div class="col-md-4 col-sm-6 mb-3">
+            <div class="card border-left-success h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="row no-gutters  ">
+                        <div class="col-auto"  >
+                      <div class="col-auto align-self-start"  >
+  <div style="background-color:rgb(10, 148, 63);border-radius:50px;padding:10px">
+    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="white" class="bi bi-check-circle" viewBox="0 0 16 16">
+      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+      <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+    </svg>
+  </div>
+</div> </div>
+                        <div class="col ml-3">
+                    <div class="text-lg   text-success   mb-1" style="font-size:24px;  ">  Current Quarter   </div>
+                    <div class="output text-muted"  >  </div>
+                            <div class="h4 mb-2 font-weight-bold text-gray-800" style="font-weight: bold;" id="currentScore"> </div>
+                                   <div class="trend" id="scoreTrend"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
        
-    </div>
+
+     
+     
+      <div class="col-md-4 col-sm-6 mb-3">
+            <div class="card border-left-success h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="row no-gutters  ">
+                        <div class="col-auto"  >
+                      <div class="col-auto align-self-start"  >
+  <div style="background-color:rgb(10, 148, 63);border-radius:50px;padding:10px">
+    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="white" class="bi bi-check-circle" viewBox="0 0 16 16">
+      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+      <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+    </svg>
+  </div>
+</div> </div>
+                        <div class="col ml-3">
+                    <div class="text-lg   text-success   mb-1" style="font-size:24px;  ">  Total Responses</div>
+                    <div class="output text-muted"  >  </div>
+                            <div class="h4 mb-2 font-weight-bold text-gray-800" style="font-weight: bold;" id="totalResponses"> </div>
+                                        <div class="trend" id="responseTrend"></div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+      
+       <div class="col-md-4 col-sm-6 mb-3">
+            <div class="card border-left-success h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="row no-gutters  ">
+                        <div class="col-auto"  >
+                      <div class="col-auto align-self-start"  >
+  <div style="background-color:rgb(10, 148, 63);border-radius:50px;padding:10px">
+    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="white" class="bi bi-check-circle" viewBox="0 0 16 16">
+      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+      <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+    </svg>
+  </div>
+</div> </div>
+                        <div class="col ml-3">
+                    <div class="text-lg   text-success   mb-1" style="font-size:24px;  ">  Response Rate</div>
+                    <div class="text-muted" id="output">  </div>
+                            <div class="h4 mb-2 font-weight-bold text-gray-800" style="font-weight: bold;" id="responseRate"> </div>
+                                        <div class="trend mt-2" id="rateChange"></div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      
+      <div class="col-md-4 col-sm-6 mb-3">
+            <div class="card border-left-success h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="row no-gutters  ">
+                        <div class="col-auto"  >
+                      <div class="col-auto align-self-start"  >
+  <div style="background-color:rgb(10, 148, 63);border-radius:50px;padding:10px">
+    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="white" class="bi bi-check-circle" viewBox="0 0 16 16">
+      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+      <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+    </svg>
+  </div>
+</div> </div>
+                        <div class="col ml-3">
+                    <div class="text-lg   text-success   mb-1" style="font-size:24px;  ">  Average Rate</div>
+                    <div class="text-muted" id="output">  </div>
+                            <div class="h4 mb-0 font-weight-bold text-gray-800" style="font-weight: bold;" id="avgRating"> </div>
+                                        <div class="trend mt-2" id="avgRatingChange"></div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+ 
     
+    
+    <div class="col-md-4 col-sm-6 mb-3">
+            <div class="card border-left-success h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="row no-gutters  ">
+                        <div class="col-auto"  >
+                      <div class="col-auto align-self-start"  >
+  <div style="background-color:rgb(10, 148, 63);border-radius:50px;padding:10px">
+    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="white" class="bi bi-check-circle" viewBox="0 0 16 16">
+      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+      <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+    </svg>
+  </div>
+</div> </div>
+                        <div class="col ml-3">
+                    <div class="text-lg   text-success   mb-1" style="font-size:24px;  ">  5s  Collected</div>
+                    <div class="text-muted" id="output">  </div>
+                          <div class="d-flex"> 
+                            <div class="h4 mb-0 font-weight-bold text-gray-800" style="font-weight: bold;" id="total5s"> 
+
+
+                            </div> 
+                          
+                            <div class=" validResponses h4 mb-0 font-weight-bold text-gray-800" style="font-weight: bold;" id="validResponses"></div>
+                          
+                          </div> 
+                                        <div class="trend mt-2" id="trend5s"></div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+
+      <div class="col-md-4 col-sm-6 mb-3">
+            <div class="card border-left-success h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="row no-gutters  ">
+                        <div class="col-auto"  >
+                      <div class="col-auto align-self-start"  >
+  <div style="background-color:rgb(10, 148, 63);border-radius:50px;padding:10px">
+    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="white" class="bi bi-check-circle" viewBox="0 0 16 16">
+      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+      <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+    </svg>
+  </div>
+</div> </div>
+                        <div class="col ml-3">
+                    <div class="text-lg   text-success   mb-1" style="font-size:24px;  ">  4s Collected</div>
+                    <div class="text-muted" id="output">  </div>
+                    <div class="d-flex">        
+                    <div class="h4 mb-0 font-weight-bold text-gray-800" style="font-weight: bold;" id="total4s"> </div>
+                            <div class=" validResponses h4 mb-0 font-weight-bold text-gray-800" style="font-weight: bold;" id="validResponses"></div>
+                                        
+                            </div>
+                            
+                            <div class="trend mt-2" id="trend4s"></div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Rating distribution cards -->
+   
     <!-- Chart row 1 -->
     <div class="container two-column">
       <div class="chart-container">
@@ -434,6 +583,9 @@
   </div>
 
   <script>
+        let totalOverallScore = 0;
+        let quarter_count = 0;
+
     // Register Chart.js plugin
     Chart.register(ChartDataLabels);
     
@@ -446,9 +598,9 @@
     // Helper function to format trend display
     function formatTrend(change) {
       if (change > 0) {
-        return `<span class="positive">↑ ${change.toFixed(1)}%</span>`;
+        return `<span class="positive">↑ ${change.toFixed(2)}%</span>`;
       } else if (change < 0) {
-        return `<span class="negative">↓ ${Math.abs(change).toFixed(1)}%</span>`;
+        return `<span class="negative">↓ ${Math.abs(change).toFixed(2)}%</span>`;
       }
       return `<span>0%</span>`;
     }
@@ -509,14 +661,14 @@
         }
 
         // Update KPI cards
-        document.getElementById('currentScore').textContent = `${(latest.overallScore * 100).toFixed(1)}%`;
+        document.getElementById('currentScore').textContent = `${(latest.overallScore * 100).toFixed(2)}%`;
         document.getElementById('scoreTrend').innerHTML = formatTrend(scoreTrend);
         
         document.getElementById('totalResponses').textContent = latest.totalSurveyResponses;
         document.getElementById('responseTrend').innerHTML = formatTrend(responseTrend);
         
         // Calculate response rate (assuming we have a total sent number, using 500 as an example)
-        const totalSent = latest.totalSurveyResponses * 2; // Just an example, replace with actual data
+        const totalSent = latest.totalSurveyResponses * 100; // Just an example, replace with actual data
         const responseRate = (latest.totalSurveyResponses / totalSent) * 100;
         document.getElementById('responseRate').textContent = `${responseRate.toFixed(1)}%`;
         document.getElementById('rateChange').innerHTML = formatTrend(percentChange(responseRate, previousQuarter ? (previousQuarter.totalSurveyResponses / (previousQuarter.totalSurveyResponses * 2)) * 100 : 0));
@@ -685,15 +837,41 @@
         // Populate historical data table
         const tableBody = document.getElementById('tableBody');
         tableBody.innerHTML = '';
-        
         scores.forEach(quarter => {
           const row = document.createElement('tr');
           
+
+  totalOverallScore += quarter.overallScore;
+  quarter_count += 1 ;
+  
+
           // Calculate 5-star percentage
           const totalResponses = quarter.totalSurveyResponses;
-          const fiveStarPercentage = ((quarter.total5s / totalResponses) * 100).toFixed(1);
-          
-          // Calculate average rating for this quarter
+          const fiveStarPercentage = ((quarter.total5s / quarter.totalValidResponses) * 100).toFixed(1);
+     
+
+
+
+        document.querySelectorAll('.validResponses').forEach(el => {
+    el.textContent = `/${quarter.totalValidResponses}`;
+});
+
+
+ document.querySelectorAll('.output').forEach(el => {
+    el.textContent = ` ${quarter.quarter} ${quarter.year}`;
+});
+const currentDate = new Date().toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+});
+
+document.querySelectorAll('.output-year').forEach(el => {
+  el.textContent = currentDate;
+});
+
+
+   // Calculate average rating for this quarter
           const quarterTotalRatings = quarter.total5s + quarter.total4s  ;
           const quarterWeightedSum = 5 * quarter.total5s + 4 * quarter.total4s  ;
           const quarterAvgRating = (quarterWeightedSum / quarterTotalRatings).toFixed(1);
@@ -702,17 +880,21 @@
             <td>${quarter.quarter} ${quarter.year}</td>
             <td>${(quarter.overallScore * 100).toFixed(1)}%</td>
             <td>${quarter.totalSurveyResponses}</td>
+          
+            <td>${fiveStarPercentage}</td>
              <td>${getStatusBadge(quarter.overallScore * 100)}</td>
           `;
           tableBody.appendChild(row);
-        });
+        }); 
+        const overall_rating =((totalOverallScore / quarter_count) * 100).toFixed(2);
+document.getElementById('overallRating').textContent =` ${overall_rating}%`;
 
       } catch (err) {
         console.error(err);
         alert('Failed to load data');
       }
     }
-
+ 
     // Fetch data for specific office ID
     fetchPerformance("{{session('office_id')}}"); // replace with dynamic ID if needed
   </script>

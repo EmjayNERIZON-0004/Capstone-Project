@@ -34,11 +34,10 @@ function updateRowNumbers() {
     });
     const totalRowsElement = document.getElementById("totalRowsCount");
     if (totalRowsElement) {
-        totalRowsElement.textContent = `  ${visibleRowCount} Responses`;
+        totalRowsElement.textContent = `${visibleRowCount}`;
     }
 }
-
-// ✅ Function to toggle table/noData display
+ 
 function checkIfNoData() {
     const rows = document.querySelectorAll("#responsesTable tbody tr");
     const hasVisible = Array.from(rows).some(row => row.style.display !== 'none');

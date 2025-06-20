@@ -82,11 +82,11 @@
         }
         
         /* Card styling */
-        .custom-card {
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            border-top: 4px solid var(--accent-color);
-        }
+            .custom-card {
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+                border-top: 4px solid var(--accent-color);
+            }
         
         .welcome-card {
             background-image: linear-gradient(to bottom right, white, var(--secondary-color));

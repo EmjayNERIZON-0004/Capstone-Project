@@ -17,16 +17,38 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\NoTransactionController; 
 use App\Http\Controllers\RequestController; use Carbon\Carbon;
 
- 
+ use Illuminate\Support\Facades\Session;
+
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Route;
 use App\Models\MainOffice;
-
+ 
 Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/reports',function(){
+        $now = Carbon::now(); // Get current date and time using Carbon
+    $currentYear = Carbon::now()->year;  
+    // Get the start and end of the current quarter
+    $startOfQuarter = $now->copy()->firstOfQuarter();
+    $endOfQuarter = $now->copy()->lastOfQuarter();
+
+    // Get the office name (you can customize this part based on your logic)
+   
+    // Get survey responses for the current quarter using whereBetween()
+    $responses = survey_responses::whereBetween('created_at', [$startOfQuarter, $endOfQuarter])
+    ->whereYear('created_at', $currentYear)    
+    ->get();
+
+    // Count the total responses, positive and negative sentiments
+    $total_responses = $responses->count();
+return view('AdminView.AdminReportTable',compact('total_responses'));
+});
+
+Route::get('/service-overall-satisfaction/{service_type}', [AdminViewController::class, 'service_overall_satisfaction']);
+Route::get('/service-weighted_average/{service_type}', [AdminViewController::class, 'service_weighted_average']);
 
 
 
@@ -43,9 +65,15 @@ Route::get('/', function () {
 
 
 
+Route::get('/change-light', function () {
+    Session::put('mode', 'light');
+    return redirect()->back();
+})->name('change_mode_light');
 
-
-
+Route::get('/change-dark', function () {
+    Session::put('mode', 'dark');
+    return redirect()->back();
+})->name('change_mode_dark');
 
 
 Route::get('/subOffices/{main_office_id}', [SubOfficeController::class, 'show'])->name('subOffices.show');
@@ -173,7 +201,7 @@ Route::post('/citizens-charter-survey/store', [SurveyPageController::class, 'sto
 
     Route::group(['prefix' => 'CSM-SDO-SCC-Survey'],function(){
         Route::get('/Overview', function(){
-return view ('SurveyPage.Overview');
+return view ('surveyPage.Overview');
         })->name('overview') ;
 
     Route::get('/Page1', [SurveyPageController::class,'page1'])->name('page1') ;
@@ -203,7 +231,9 @@ Route::group(['prefix' => 'Office'],function(){
     Route::get('/Dashboard', [OfficeDashboardController::class,'showDashboard'])->name('showDashboard');
     Route::get('/SurveyList/{quarter}/{year}', [OfficeDashboardController::class, 'showSurveys'])->name('showSurveys');
     Route::get('/Dashboard', [OfficeDashboardController::class, 'computeOverallScore'])->name('dashboard_with_score');
-   
+        Route::get('/OfficeProfile',[OfficeDashboardController::class,'profile']);
+   Route::post('/profile/upload', [OfficeDashboardController::class, 'upload'])->name('office.profile.upload');
+
 });
 Route::get('/office/dashboard', [OfficeDashboardController::class, 'index'])->name('office.dashboard');
 Route::get('/get-services/{subOfficeName}', [OfficeDashboardController::class, 'getServices']);
@@ -230,13 +260,18 @@ Route::group(['prefix' => 'Admin'],function(){
     Route::get('/go-back-services', [AdminViewController::class, 'goBackToServices'])->name('goBackToServices');
     Route::get('/OfficesRemarks/{quarter}/{year}', [AdminViewController::class, 'Admin_OfficeRemarks'])->name('OfficeRemarks');
     Route::get('/api/ranked-offices/{quarter}/{year}', [AdminViewController::class, 'getRankedOffices']);
+    Route::get('/api/overall-ranked-office/{quarter}/{year}', [AdminViewController::class, 'overallRankedOffice']);
     Route::get('/overall-score2', [AdminViewController::class, 'getOverallSurveyScore']);
+    Route::get('/overall-total-score', [AdminViewController::class, 'getOverall']);
+   
+
+    Route::get('/api/monthly-survey-scores', [AdminViewController::class, 'getMonthlySurveyScores']);
+
     Route::get('/api/quarterly-survey-scores', [AdminViewController::class, 'getQuarterlySurveyScores']);
     Route::get('/api/yearly-survey-scores', [AdminViewController::class, 'getYearlySurveyScores']);
     Route::get('/api/getServicePerformanceChart', [AdminViewController::class, 'getServicePerformanceChart']);
     Route::get('/api/getOverallScoreByMainOffice', [AdminViewController::class, 'getOverallScoreByMainOffice']);
 
-    
 
     Route::get('/Report',[AdminViewController::class,'reports'])->name('Report');  
     Route::get('/top-offices-per-sqd', [AdminViewController::class, 'getTopOfficesPerSQD']);
@@ -244,15 +279,24 @@ Route::group(['prefix' => 'Admin'],function(){
     Route::get('/top-service-per-sqd', [AdminViewController::class, 'getTopServicePerSQD']);
     Route::get('/test', [AdminViewController::class, 'test']);
     Route::get('/Surveys', [AdminViewController::class, 'surveys'])->name('survey.responses');
-    });
+    Route::get('OverallRating',function(){
+        return view ('AdminView.AdminOverallRating');
+    })->name('SQDDashboard');
+    
+Route::get('valid-survey',[AdminViewController::class,'valid_survey'])->name('valid_surveys');
+Route::get('get-valid-survey/{quarter}/{year}',[AdminViewController::class,'get_valid_survey'])->name('get_valid_survey');
+Route::get('/valid-survey-analytics/{year}/{mode?}', [AdminViewController::class, 'get_valid_survey_analytics']);
+Route::get('/response-counts/{year}/{mode}', [AdminViewController::class, 'get_response_counts']);
+
+});
         Route::get('/AdminDashboard',[AdminViewController::class,'dashboard'])->name('Main');
         Route::get('/sentiments-data/{sentiment}', [AdminViewController::class, 'showSentimentData']);
+       
         Route::get('Concerns',function(){
             return view('AdminView.AdminConcernsList');
         })->name('concerns_feedbacks');
+    
         Route::get('rating-history',function(){
-            
-
         $years_cb = survey_responses::selectRaw('YEAR(created_at) as year')
         ->distinct()
         ->orderByDesc('year')
@@ -274,6 +318,7 @@ Route::group(['prefix' => 'Admin'],function(){
         Route::get('PositiveFeedbacks',function(){
             return view('AdminView.AdminPositiveList');
         })->name('positive_feedbacks');
+
         Route::get('OfficeRemarks',function(){
             
         $years_cb = survey_responses::selectRaw('YEAR(created_at) as year')
@@ -347,7 +392,12 @@ Route::get('/Section',function(){
     return view('SectionView.SectionDashboard');
 })->name('section');
 
+
+ 
+
 Route::get('/Section/Dashboard',[SectionController::class,'index'])->name('section_dashboard');
+
+Route::get('/Section/Services',[SectionController::class,'submission'])->name('section_submission');
 
 Route::post('/section/service-transaction-counts', [ServiceTransactionCountController::class, 'store'])->name('transaction_counts.store');
 
@@ -400,18 +450,24 @@ Route::get('api/recent-activities', [App\Http\Controllers\RequestController::cla
 // Route for getting all dashboard data including recent activities
  Route::get('/HomeSDOPage',function(){
     return view ('HomeSDOPage');
- });
+ })->name('landing_page');
+  Route::get('/HomePage',function(){
+    return view ('HomePage');
+ })->name('HomePage');  Route::get('/SDO-SCC-Assistant',function(){
+    return view ('SDO_chatbot');
+ })->name('SDO-SCC-Assistant');
  Route::get('/top-sqd',function(){
     return view ('AdminView.AdminSQDTop');
     
  }); 
  // Historical sentiment data endpoints,
  Route::get('/sentiments-data/historical/positive', [AdminViewController::class,  'getHistoricalPositive']);
- Route::get('/sentiments-data/historical/negative',  [AdminViewController::class,'getHistoricalNegative']);
- Route::get('/sentiments-data/historical/all',  [AdminViewController::class,'getHistoricalAll']);
+ Route::get('/sentiments-data/historical/negative',  [AdminViewController::class, 'getHistoricalNegative']);
+ Route::get('/sentiments-data/historical/neutral',  [AdminViewController::class, 'getHistoricalNeutral']);
+ Route::get('/sentiments-data/historical/all',  [AdminViewController::class, 'getHistoricalAll']);
  
  // New comprehensive endpoint for all feedback data
- Route::get('/sentiments-data/all-feedback',  [AdminViewController::class,'getAllFeedback']);
+    Route::get('/sentiments-data/all-feedback',  [AdminViewController::class,'getAllFeedback']);
 
  Route::get('/Office-Performance',function(){
     return view ('OfficeView.OfficeQuarterlyPerformance');
@@ -419,3 +475,9 @@ Route::get('api/recent-activities', [App\Http\Controllers\RequestController::cla
  })->name('OfficePerformance'); 
 
  Route::get('/Admin/Recent-Activities', [AdminViewController::class, 'logs'])->name('recent_activities');
+
+    Route::get('Section/Profile',[SectionController::class,'profile']);
+   Route::post('section/profile/upload', [SectionController::class, 'upload'])->name('section.profile.upload');
+
+
+ 

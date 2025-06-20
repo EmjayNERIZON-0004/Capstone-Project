@@ -1,51 +1,39 @@
  
 
-    function loadTopOfficesPerSQD() {
-        fetch('Admin/top-offices-per-sqd')
-            .then(response => response.json())
-            .then(data => {
-                if (!data.topOfficesPerSQD || Object.keys(data.topOfficesPerSQD).length === 0) {
-                    document.getElementById('topOfficesTableBody').innerHTML =
-                        `<tr><td colspan="5" class="text-center">No data available</td></tr>`;
-                    return;
-                }
+function loadTopOfficesPerSQD() {
+    
+    fetch('top-offices-per-sqd')
+        .then(response => response.json())
+        .then(data => {
+            if (!data.topOfficesPerSQD || Object.keys(data.topOfficesPerSQD).length === 0) {
+                document.getElementById('topOfficesTableBody').innerHTML =
+                    `<tr><td colspan="6" class="text-center">No data available</td></tr>`;
+                return;
+            }
 
-                let tableBody = '';
-                for (let sqd in data.topOfficesPerSQD) {
-                    let office = data.topOfficesPerSQD[sqd];
-                    if (office) {
-                        let scorePercentage = (office.score * 100).toFixed(2);
-                        let interpretation = getScoreInterpretation(office.score, office.office_name, sqd, " ");
+            let tableBody = '';
+            for (let sqd in data.topOfficesPerSQD) {
+                const offices = data.topOfficesPerSQD[sqd];
 
-                        tableBody += `
+                let rowCount = 0;
+                let rowCount1 = offices.length;
+
+                offices.forEach(office => {
+                    let scorePercentage = (office.score * 100).toFixed(2);
+                    let interpretation = getScoreInterpretation(office.score, office.office_name, sqd, "office");
+
+                    tableBody += `
                         <tr>
-                            <td style="font-size:18px">${sqd.toUpperCase()}</td>
-                            <td style="font-size:18px;width:130px">
-                                ${ 
-                                    sqd === 'sqd1' ? 'Responsiveness' :
-                                    sqd === 'sqd2' ? 'Reliability' :
-                                    sqd === 'sqd3' ? 'Access and Facilities' :
-                                    sqd === 'sqd4' ? 'Communication' :
-                                    sqd === 'sqd5' ? 'Costs' :
-                                    sqd === 'sqd6' ? 'Integrity' :
-                                    sqd === 'sqd7' ? 'Assurance' :
-                                    sqd === 'sqd8' ? 'Outcome' :
-                                    sqd.toUpperCase()
-                                }
-                            </td>
-                                <td style="font-size:18px;width:270px">
-                                ${ 
-                                    sqd === 'sqd1' ? 'The willingness to help, assist, and provide prompt service to citizens/clients.' :
-                                    sqd === 'sqd2' ? 'The provision of what is needed and what was is promised, following the policy and standards, with zero to a minimal error rate.' :
-                                    sqd === 'sqd3' ? 'The convinience of location, sample ammenities for comfortable transactions, use of clear signages, and modes of techhnology.' :
-                                    sqd === 'sqd4' ? 'The act of keeping citizens and clients informed in a language they can easilty understand, as well as listening to their feedback.' :
-                                    sqd === 'sqd5' ? 'The satisfaction with timeliness of the billing, billing process/es, preffered methods of payment, reasonable payment period, value of money, the acceptable range of costs adn qualitative information on the cost of each service.' :
-                                    sqd === 'sqd6' ? 'The assurance that there is honestly, justice, fairness, and trust in each service while dealing with the citizens/clients.' :
-                                    sqd === 'sqd7' ? 'The capability  of frontline staff to perform their duties, product and service knowledge, understand citizen/client needs, helpfulnesss, and good work relationships.' :
-                                    sqd === 'sqd8' ? 'The externt of achieving outcomes or realizing the intended benefits of government services.' :
-                                    sqd.toUpperCase()
-                                }
-                            </td>
+                            ${rowCount === 0 ? `
+                                <td rowspan="${rowCount1}" style="font-size:18px">${sqd.toUpperCase()}</td>
+                                <td rowspan="${rowCount1}" style="font-size:18px;width:130px">
+                                    ${getCategoryLabel(sqd)}
+                                </td>
+                                <td rowspan="${rowCount1}" style="font-size:18px;width:270px">
+                                    ${getCategoryDescription(sqd)}
+                                </td>
+                            ` : ''}
+
                             <td style="font-size:18px">${office.office_name}</td>
                             <td style="font-size:18px">
                                 <span class="score-value" style="font-size:18px">${scorePercentage}%</span>
@@ -53,14 +41,19 @@
                                     <div class="score-bar" style="width: ${scorePercentage}%; background-color: ${getColorForScore(scorePercentage)};"></div>
                                 </div>
                             </td>
-                            <td style="font-size:18px" class="analysis-text">${interpretation}</td>  <!-- Interpretation Column -->
-                        </tr>`;
-                    }
-                }
-                document.getElementById('topOfficesTableBody').innerHTML = tableBody;
-            })
-            .catch(error => console.error("Error fetching data:", error));
-    }
+
+                            ${rowCount === 0 ? `<td rowspan="${rowCount1}" style="font-size:18px" class="analysis-text">${interpretation}</td>` : ''}
+                        </tr>
+                    `;
+
+                    rowCount++;
+                });
+            }
+
+            document.getElementById('topOfficesTableBody').innerHTML = tableBody;
+        })
+      
+}
 
     function getColorForScore(score) {
         if (score < 60) return '#F44336'; 

@@ -91,54 +91,15 @@ function getColorForScore(score) {
              }
 
 
-             function updateClock() {
-                const clock = document.getElementById('realtimeClock');
-                const now = new Date();
-                const time = now.toLocaleTimeString('en-US', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit',
-                });
-                clock.textContent = time;
-            }
-        
-            setInterval(updateClock, 1000);
-            updateClock(); 
+          
         
             function getQuarter(month) {
                 return Math.floor(month / 3) + 1;
             }
         
-            function updateDateCard() {
-                const now = new Date();
-                
-                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                const formattedDate = now.toLocaleDateString('en-US', options);
-        
-                const quarter = getQuarter(now.getMonth());
-                const year = now.getFullYear();
-        
-                document.getElementById('currentDate').textContent = formattedDate;
-                document.getElementById('currentQuarterYear').textContent = `Quarter ${quarter} of ${year}`;
-            }
-        
+      
            
 
 
-            function updateDateTime() {
-                const now = new Date();
-            
-                // Format Date (e.g., "Sunday, March 17, 2025")
-                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                document.getElementById("realDate").textContent = now.toLocaleDateString('en-US', options);
-            
-                // Format Time in 12-hour format with AM/PM
-                let hours = now.getHours();
-                const minutes = now.getMinutes().toString().padStart(2, "0");
-                const seconds = now.getSeconds().toString().padStart(2, "0");
-                const ampm = hours >= 12 ? "PM" : "AM";
-                hours = hours % 12 || 12; // Convert 24-hour format to 12-hour format
-            
-                document.getElementById("realTimeClock").textContent = `${hours}:${minutes}:${seconds} ${ampm}`;
-            }
+        
               

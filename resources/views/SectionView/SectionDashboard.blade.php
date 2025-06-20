@@ -22,7 +22,7 @@
         .top-navbar {  
             position: fixed;
             top: 0;
-            background-color: rgb(13, 111, 186);
+            background-color: rgb(1, 55, 142);
             color: white;
             width: 100%;
             z-index: 1030;
@@ -73,8 +73,7 @@
         .stat-content {
             width: calc(100% - 80px);
             padding-left: 15px;
-            font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-        }
+          }
         
         .user-dropdown .dropdown-toggle {
             background-color: white;
@@ -222,10 +221,10 @@
 </head>
 <body>
     <!-- Top Navbar -->
-    <nav class="navbar navbar-expand-lg bg-dark top-navbar shadow-sm sticky-top">
+    <nav class="navbar navbar-expand-lg  top-navbar shadow-sm sticky-top">
     <div class="container-fluid"> 
         <div class="d-flex align-items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2 text-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2 text-white">
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                 <polyline points="9 22 9 12 15 12 15 22"></polyline>
             </svg>
@@ -235,49 +234,47 @@
 
         <!-- Right Side Icons -->
         <div class="d-flex align-items-center ms-auto">
-            <!-- Date Display -->
-            <div class="me-3 d-none d-md-flex align-items-center  text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1 text-primary">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                    <line x1="16" y1="2" x2="16" y2="6"></line>
-                    <line x1="8" y1="2" x2="8" y2="6"></line>
-                    <line x1="3" y1="10" x2="21" y2="10"></line>
-                </svg>
-                {{ \Carbon\Carbon::now()->toFormattedDateString() }}
-            </div>
+        
 
             <!-- User Dropdown -->
-            <div class="dropdown user-dropdown">
-                <button class="btn dropdown-toggle d-flex align-items-center bg-dark" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <div class="d-flex align-items-center">
-                        <div class="avatar-container bg-light rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="12" cy="7" r="4"></circle>
-                            </svg>
-                        </div>
-                        <span class="fw-semibold text-white d-none d-sm-inline">{{ $section->office_admin }}</span>
-                    </div>
-                </button>
+            <div class="dropdown text-white ">
+               <button class="btn dropdown-toggle text-white  d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+    <div class="d-flex align-items-center text-white">
+   Menu
+        <!-- Optional: User name or other text -->
+        <!-- <span class="fw-semibold text-white d-none d-sm-inline">{{ $section->office_admin }}</span> -->
+    </div>
+</button>
+
 
                 <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userDropdown">
                     <li class="dropdown-header d-sm-none">{{ $section->office_admin }}</li>
+                 
                     <li>
-                        <a class="dropdown-item d-flex align-items-center" href="#">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2 text-primary">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="12" cy="7" r="4"></circle>
-                            </svg>
-                            Profile
+                        <a class="dropdown-item d-flex align-items-center" href="Dashboard">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="me-2 text-primary" viewBox="0 0 16 16">
+            <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6.5 6.5A.5.5 0 0 0 1.5 8.5H2v5.5A1.5 1.5 0 0 0 3.5 15h3A.5.5 0 0 0 7 14.5V11a1 1 0 0 1 2 0v3.5a.5.5 0 0 0 .5.5h3A1.5 1.5 0 0 0 14 14V8.5h.5a.5.5 0 0 0 .354-.854l-6.5-6.5z"/>
+        </svg>
+                            Dashboard
                         </a>
                     </li>
-                    <li>
-                        <a class="dropdown-item d-flex align-items-center" href="#">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2 text-primary">
-                                <circle cx="12" cy="12" r="3"></circle>
-                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                            </svg>
-                            Settings
+                     <li>
+                        <a class="dropdown-item d-flex align-items-center" href="Services">
+             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"   fill="currentColor"  class="me-2 text-primary" viewBox="0 0 24 24">
+  <path d="M10 2a2 2 0 0 0-2 2v3H5a3 3 0 0 0-3 3v9a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-9a3 3 0 0 0-3-3h-3V4a2 2 0 0 0-2-2h-4zm0 2h4v3h-4V4z"/>
+</svg>
+
+ 
+                            Submission
+                        </a>
+                    </li>
+                       <li>
+                        <a class="dropdown-item d-flex align-items-center" href="Profile">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="me-2 text-primary" viewBox="0 0 16 16">
+  <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+</svg>
+
+                            Profile
                         </a>
                     </li>
                     <li><hr class="dropdown-divider"></li>
@@ -297,35 +294,293 @@
     </div>
 </nav>
 
-<!-- Section Name Banner -->
-<div class="container-fluid  mt-2">
-    <div class="card bg-primary bg-gradient text-white shadow-sm">
-        <div class="card-body py-3">
-            <div class="d-flex align-items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-3">
-                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                    <line x1="12" y1="22.08" x2="12" y2="12"></line>
-                </svg>
-                <div>
-                    <h3 class="mb-0 d-none d-md-block">{{ $section->sub_office_name }}</h3>
-                    <h5 class="mb-0 d-md-none">{{ $section->sub_office_name }}</h5>
+
+
+ <style>
+        .welcome-card {
+            background: white;
+            border-radius: 5px;
+            padding: 2rem;
+            color: #333;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .welcome-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .welcome-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .welcome-text {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .welcome-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #1f2937;
+        }
+        
+        .welcome-subtitle {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #6b7280;
+            margin-bottom: 1rem;
+        }
+        
+        .admin-name {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #007bff;
+        }
+        
+        .profile-image-container {
+            position: relative;
+            z-index: 2;
+            
+        }
+        
+        .profile-image {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #e5e7eb;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .profile-image:hover {
+            transform: scale(1.05);
+            border-color: #007bff;
+            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.2);
+        }
+        
+        .profile-image-placeholder {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: #f9fafb;
+            border: 3px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .profile-image-placeholder:hover {
+            transform: scale(1.05);
+            background: #f3f4f6;
+            border-color: #007bff;
+            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.2);
+        }
+        
+        .current-date {
+            font-size: 1rem;
+            color: #6b7280;
+            font-weight: 400;
+            margin-top: 0.5rem;
+        }
+        
+        .decorative-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.1;
+            z-index: 1;
+        }
+        
+        .decorative-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .decorative-circle:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 20px;
+            left: 20px;
+            animation: float 8s ease-in-out infinite;
+        }
+        
+        .decorative-circle:nth-child(2) {
+            width: 60px;
+            height: 60px;
+            bottom: 30px;
+            left: 50px;
+            animation: float 8s ease-in-out infinite reverse;
+        }
+        
+        .decorative-circle:nth-child(3) {
+            width: 40px;
+            height: 40px;
+            top: 50%;
+            left: 30px;
+            animation: float 10s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .welcome-card {
+                padding: 1.5rem;
+            }
+            
+            .welcome-title {
+                font-size: 2rem;
+            }
+            
+            .admin-name {
+                font-size: 1.5rem;
+            }
+            
+            .profile-image,
+            .profile-image-placeholder {
+                width: 100px;
+                height: 100px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .welcome-title {
+                font-size: 1.8rem;
+            }
+            
+            .welcome-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .admin-name {
+                font-size: 1.3rem;
+            }
+            
+            .profile-image,
+            .profile-image-placeholder {
+                width: 80px;
+                height: 80px;
+            }
+        }
+        .custom-container{
+            border-radius: 5px;
+        }
+    </style>
+ 
+        <div class="container customer-container py-4"  >
+
+        <div class="row">
+            <div class="col-12">
+                <div class="welcome-card">
+                     <div class="section-badge">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2">
+                                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                                    </svg>
+                                    {{$section->sub_office_name}}
+                                </div>
+                    
+                    
+                    <div class="row align-items-center">
+                        <div class="col-lg-8 col-md-7">
+                            <div class="welcome-text">
+                                <h1 class="welcome-title">Welcome Back!</h1>
+                                <p class="welcome-subtitle">Ready to manage your section efficiently</p>
+                                <h2 class="admin-name">{{$section->office_admin}}</h2>
+                                <p class="current-date">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    </svg>
+                                    <span id="currentDate">Tuesday, June 10, 2025</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 text-center">
+                            <div class="profile-image-container">
+                                <!-- Option 1: With actual image -->
+                                @php
+    $profileImage = $section->image_path ? 'images/' . $section->image_path : 'logo.png';
+@endphp
+
+<img src="{{ asset($profileImage) }}" 
+     alt="Office Admin Profile" 
+     class="profile-image"
+     id="profileImage"
+     style="object-fit: cover;">
+
+                                
+                                
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div> 
-    <div class="container  py-5"  >
+
+    <script>
+        // Update current date
+        function updateDate() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long',
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
+        }
+        
+        // Initialize date
+        updateDate();
+        
+        // Update date every minute
+        setInterval(updateDate, 60000);
+       
+        
+        // Demo: Click to toggle image
+   
+     </script>
+
+
+<!-- Section Name Banner -->
+
+    <div class="container"  >
     @php
             use Carbon\Carbon;
             $today = Carbon::now()->format('l');  
         @endphp
 
-        @if ($today == "Monday")     <?php
+        @if ($today == "Tuesday")     <?php
                         function getIconSVG($score) {
                             $color = '';
 
-                            if ($score < 0.60) {
+                            if ($score < 0.60 && $score > 0) {
                                 $color = '#F44336';
                                 $svg = view('components.svg.sad2')->render();
                             } else if ($score >= 0.60 && $score < 0.80) {
@@ -338,14 +593,16 @@
                                 $color = '#4CAF50';
                                 $svg = view('components.svg.smile')->render(); 
                             } else {
-                                return '';
+                                $color = 'rgb(154, 154, 154)'; 
+                                $svg = view('components.svg.neutral')->render(); 
+
                             }
 
                             return "<div style='color: $color;'>$svg</div>";
                         }
 
                         function getEquivalent($score) {
-                            if ($score < 0.60) {
+                            if ($score < 0.60 && $score > 0.0) {
                                 return '<h2>Poor</h2>';
                             } else if ($score >= 0.60 && $score < 0.80) {
                                 return '<h2>Fair</h2>';
@@ -356,12 +613,16 @@
                             } else if($score > 96) {
                                 return '<h2>Outstanding</h2>';
                             }
+                            else{
+                                return '<h2>None</h2>';
+
+                            }
                         }
                         ?>
-            <div class="section-dashboard ">
+            <div class="section-dashboard" >
                 <!-- Stats Section -->
-               <div class="row">
-    <div class="col-md-3 col-sm-6 mb-3">
+               <div class="row"  >
+    <div class="col-md-3 col-sm-6 ">
         <div class="card shadow rounded-1">
             <div class="card-body text-center d-flex">
                 <div class="box" style="background-color:rgb(108, 108, 108);">
@@ -375,7 +636,7 @@
         </div>
     </div>
 
-    <div class="col-md-3 col-sm-6 mb-3">
+    <div class="col-md-3 col-sm-6 ">
         <div class="card shadow rounded-1">
             <div class="card-body text-center d-flex">
                 <div class="box" style="background-color:rgb(12, 120, 77);">
@@ -389,7 +650,7 @@
         </div>
     </div>
 
-    <div class="col-md-3 col-sm-6 mb-3">
+    <div class="col-md-3 col-sm-6 ">
         <div class="card shadow rounded-1">
             <div class="card-body text-center d-flex">
                 <div class="box" style="background-color:rgb(26, 104, 193);">
@@ -397,23 +658,39 @@
                 </div>
                 <div class="stat-content">
                     <h5 class="card-title mb-0 text-muted fw-normal">Section Rating</h5>
-                    <h2 style="color:rgb(53, 53, 53)"><b>{{ number_format($overallScore * 100, 2) }}%</b></h2>
+                        @if($totalResponses !=0)
+                     <h2 style="color:rgb(53, 53, 53)"><b>{{ number_format($overallScore * 100, 2) }}%</b></h2>
+                        @else
+                     <h2 style="color:rgb(53, 53, 53)"><b>None</b></h2>
+
+                        @endif
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-3 col-sm-6 mb-3">
+    <div class="col-md-3 col-sm-6   ">
        
 
         <div class="card shadow rounded-1">
             <div class="card-body text-center d-flex">
                 <div class="icon-container">
+                    @if($totalResponses  != 0)
                     {!! getIconSVG($overallScore) !!}
+                 
+                        @else
+                    {!! getIconSVG(-1) !!}
+                        
+                        @endif
                 </div>
                 <div class="stat-content">
                     <h5 class="card-title mb-0 text-muted fw-normal">Status</h5>
+                         @if($totalResponses  != 0)
                     {!! getEquivalent($overallScore) !!}
+                        @else
+                    {!! getEquivalent(-1) !!}
+
+                        @endif
                 </div>
             </div>
         </div>
@@ -423,14 +700,14 @@
                 <input type="hidden" id="section_id" value="{{session('sub_office_id')}}">
                 
                 <!-- Ranked Services Chart -->
-                <div class="card mt-4 shadow rounded-3">
+                <div class="card  shadow rounded-3">
                     <div class="card-header">
                         @php 
                             $now = Carbon::now();
                             $quarter = $now->quarter;
                             $year = $now->year;
                         @endphp
-                        <h5 class="mb-0">Ranked Services - Quarter {{ $quarter }} of {{ $year }}</h5>
+                        <h5 class="mb-0">  Services Offered Ranking - Quarter {{ $quarter }} of {{ $year }}</h5>
                     </div>
                     
                     <div class="card-body" style="height: 400px">
@@ -611,8 +888,8 @@
                 </div>
             </div>
         @else
-            <div class="card shadow text-center py-5 my-0">
-                <div class="card-body">
+            <div class="    text-center   my-0 mb-3">
+                <div class=" ">
                     <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="rgb(13, 111, 186)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-3">
                         <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                         <line x1="16" y1="2" x2="16" y2="6"></line>
@@ -626,278 +903,5 @@
             </div>
         @endif
 
-        <!-- Transaction Submission Section -->
-        @php 
-            $now = Carbon::now();
-            $currentQuarter = $now->quarter;
-            $currentYear = $now->year;
-            $startOfQuarter = $now->copy()->firstOfQuarter();
-            $endOfQuarter = $now->copy()->lastOfQuarter();
-            $startWindow = $endOfQuarter->copy()->subDays(60);
-            $endWindow = $endOfQuarter->copy()->addDays(6);
-            $isSubmissionWindowOpen = $now->between($startWindow, $endWindow);
-        @endphp
-        <div class="card p-3 mt-3 shadow rounded-3"> 
-    <div class="d-flex align-items-center mb-3">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2 text-primary">
-            <polygon points="14 2 18 6 7 17 3 17 3 13 14 2"></polygon>
-            <line x1="3" y1="22" x2="21" y2="22"></line>
-        </svg>
-        <h4 class="mb-0">Submission of Total Transaction in every Services</h4>
-    </div>
-    <div class="card-body">
-        <div class="alert alert-light mb-4 shadow-sm" style="border:1px solid #ccc">
-            <div class="d-flex align-items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-3 text-dark">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="16" x2="12" y2="12"></line>
-                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                </svg>
-                <div>
-                    <strong>Current Quarter:</strong> Q{{ $currentQuarter }} of {{ $currentYear }}<br>
-                    <strong>Submission Window:</strong> {{ $startWindow->format('M d, Y') }} to {{ $endWindow->format('M d, Y') }}<br>
-                    <strong>Status:</strong> 
-                    <span class="badge {{ $isSubmissionWindowOpen ? 'bg-success' : 'bg-danger' }}">
-                        {{ $isSubmissionWindowOpen ? 'Open for Submission' : 'Closed for Submission' }}
-                    </span>
-                </div>
-            </div>
-        </div>
-
-        <!-- External Services Section -->
-        @if(count($externalServices) > 0)
-            <div class="mb-4">
-                <div class="d-flex align-items-center mb-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2 text-primary">
-                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                        <polyline points="15 3 21 3 21 9"></polyline>
-                        <line x1="10" y1="14" x2="21" y2="3"></line>
-                    </svg>
-                    <h5 class="mb-0">External Services</h5>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-hover table-bordered table-striped">
-                        <thead class="table-primary">
-                            <tr>
-                                <th>Service Name</th>
-                                <th width="15%">Transaction Count</th>
-                                <th width="15%">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($externalServices as $service)
-                                <tr>
-                                    <td class="align-middle">{{ $service->service_name }}</td>
-                                    <td class="align-middle">
-                                        @php
-                                            $existing = \App\Models\ServiceTransactionCount::where('service_id', $service->id)
-                                                ->where('quarter', $currentQuarter)
-                                                ->where('year', $currentYear)
-                                                ->first();
-                                        @endphp
-
-                                        @if (!$existing && $isSubmissionWindowOpen)
-                                            <form method="POST" action="{{ route('submit.transaction') }}" class="d-flex gap-2">
-                                                @csrf
-                                                <input type="hidden" name="service_id" value="{{ $service->id }}">
-                                                <input type="number" name="transaction_count" class="form-control" min="0" required placeholder="Enter count">
-                                        @elseif ($existing)
-                                            <span class="badge bg-success fs-6 w-100 py-2" style="font-weight:normal">{{ $existing->transaction_count }}</span>
-                                        @else
-                                            <span class="text-dark text-center fs-6 w-100 py-2" style="font-weight:normal">Not Available</span>
-                                        @endif
-                                    </td>
-                                    <td class="align-middle">
-                                        @if (!$existing && $isSubmissionWindowOpen)
-                                            <button type="submit" class="btn btn-primary btn-sm w-100 d-flex align-items-center justify-content-center">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
-                                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                                </svg>
-                                                Submit
-                                            </button>
-                                            </form>
-                                        @elseif ($existing)
-                                            <button class="btn btn-success btn-sm w-100 d-flex align-items-center justify-content-center" disabled>
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
-                                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                                                </svg>
-                                                Submitted
-                                            </button>
-                                        @else
-                                            <button class="btn btn-secondary btn-sm w-100 d-flex align-items-center justify-content-center" disabled>
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
-                                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                                                </svg>
-                                                Closed
-                                            </button>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        @endif
-
-        <!-- Internal Services Section -->
-        @if(count($internalServices) > 0)
-            <div class="mb-4">
-                <div class="d-flex align-items-center mb-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2 text-primary">
-                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                    </svg>
-                    <h5 class="mb-0">Internal Services</h5>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-hover table-bordered table-striped">
-                        <thead class="table-info">
-                            <tr>
-                                <th>Service Name</th>
-                                <th width="15%">Transaction Count</th>
-                                <th width="15%">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($internalServices as $service)
-                                <tr>
-                                    <td class="align-middle">{{ $service->service_name }}</td>
-                                    <td class="align-middle">
-                                        @php
-                                            $existing = \App\Models\ServiceTransactionCount::where('service_id', $service->id)
-                                                ->where('quarter', $currentQuarter)
-                                                ->where('year', $currentYear)
-                                                ->first();
-                                        @endphp
-
-                                        @if (!$existing && $isSubmissionWindowOpen)
-                                            <form method="POST" action="{{ route('submit.transaction') }}" class="d-flex gap-2">
-                                                @csrf
-                                                <input type="hidden" name="service_id" value="{{ $service->id }}">
-                                                <input type="number" name="transaction_count" class="form-control" min="0" required placeholder="Enter count">
-                                        @elseif ($existing)
-                                            <span class="badge bg-success fs-6 w-100 py-2" style="font-weight:normal">{{ $existing->transaction_count }}</span>
-                                        @else
-                                            <span class="text-dark text-center fs-6 w-100 py-2" style="font-weight:normal">Not Available</span>
-                                        @endif
-                                    </td>
-                                    <td class="align-middle">   
-                                        @if (!$existing && $isSubmissionWindowOpen)
-                                            <button type="submit" class="btn btn-primary btn-sm w-100 d-flex align-items-center justify-content-center">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
-                                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                                </svg>
-                                                Submit
-                                            </button>
-                                            </form>
-                                        @elseif ($existing)
-                                            <button class="btn btn-success btn-sm w-100 d-flex align-items-center justify-content-center" disabled>
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
-                                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                                                </svg>
-                                                Submitted
-                                            </button>
-                                        @else
-                                            <button class="btn btn-secondary btn-sm w-100 d-flex align-items-center justify-content-center" disabled>
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
-                                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                                                </svg>
-                                                Closed
-                                            </button>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        @endif
-
-        <!-- Both Services Section -->
-        @if(count($bothServices) > 0)
-            <div>
-                <div class="d-flex align-items-center mb-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2 text-primary">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="9" cy="7" r="4"></circle>
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                    </svg>
-                    <h5 class="mb-0">Services Offered</h5>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-hover table-bordered table-striped">
-                        <thead class="table-warning">
-                            <tr>
-                                <th>Service Name</th>
-                                <th width="15%">Transaction Count</th>
-                                <th width="15%">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($bothServices as $service)
-                                <tr>
-                                    <td class="align-middle">{{ $service->service_name }}</td>
-                                    <td class="align-middle">
-                                        @php
-                                            $existing = \App\Models\ServiceTransactionCount::where('service_id', $service->id)
-                                                ->where('quarter', $currentQuarter)
-                                                ->where('year', $currentYear)
-                                                ->first();
-                                        @endphp
-
-                                        @if (!$existing && $isSubmissionWindowOpen)
-                                            <form method="POST" action="{{ route('submit.transaction') }}" class="d-flex gap-2">
-                                                @csrf
-                                                <input type="hidden" name="service_id" value="{{ $service->id }}">
-                                                <input type="number" name="transaction_count" class="form-control" min="0" required placeholder="Enter count">
-                                        @elseif ($existing)
-                                            <span class="badge bg-success fs-6 w-100 py-2">{{ $existing->transaction_count }}</span>
-                                        @else
-                                            <span class="text-dark text-center fs-6 w-100 py-2" style="font-style: normal;">Not Available</span>
-                                        @endif
-                                    </td>
-                                    <td class="align-middle">
-                                        @if (!$existing && $isSubmissionWindowOpen)
-                                            <button type="submit" class="btn btn-primary btn-sm w-100 d-flex align-items-center justify-content-center">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
-                                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                                </svg>
-                                                Submit
-                                            </button>
-                                            </form>
-                                        @elseif ($existing)
-                                            <button class="btn btn-success btn-sm w-100 d-flex align-items-center justify-content-center" disabled>
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
-                                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                                                </svg>
-                                                Submitted
-                                            </button>
-                                        @else
-                                            <button class="btn btn-secondary btn-sm w-100 d-flex align-items-center justify-content-center" disabled>
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
-                                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                                                </svg>
-                                                Closed
-                                            </button>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        @endif
-    </div>
-</div>
 </body>
 </html>

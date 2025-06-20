@@ -128,7 +128,7 @@ font-size: 1rem;
 
 </style>
 
-            <div class="dashboard-header mb-0">
+            <!-- <div class="dashboard-header mb-0">
                 <div class="row align-items-center">
                     <div class="col-md-7">
                         <div class="d-flex align-items-center">
@@ -163,75 +163,201 @@ font-size: 1rem;
     <input type="text" id="officeSearch" class="form-control search-input" placeholder="Search for services">
 </div></div>
                 </div>
-            </div>
+            </div> -->
 
 
 
 
-
-
-
-
-
-            <table class="table table-bordered" id="officeTable">
-                <thead class="table-dark">
-                    <tr>
-                        <th scope="col">Service Name</th> 
-                        <th  scope="col">Service Type</th> 
-                        <th   scope="col">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if($services->isEmpty())
-                        <tr>
-                            <td colspan="3" class="text-center">No services found for this sub-office.</td>
-                        </tr>
-                    @else
-                        @foreach($services as $service)
-                        <tr class="searchable-row">
-                        
-                                <td class="service-name" style="max-width:500px">{{ $service->service_name }}</td>
-                                <td>{{ $service->services_type }}</td>
-                                   <td class="text-center">
-                                    <a href="{{ route('servicesAvailed.edit', $service->id) }}" class="btn btn-primary btn-custom">
-                                        Edit
-                                    </a>
-                                    <form action="{{ route('servicesAvailed.destroy', $service->id) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-custom" onclick="return confirm('Are you sure?');">
-                                              Delete
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach
-                    @endif
-                </tbody>
-            </table>
+   <?php
+        $month = date('n'); // Numeric representation of the month (1–12)
+        $year = date('Y'); // Current year
+        $quarter = ceil($month / 3); // Determine the quarter
+    ?>
+    
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h2 class="fw-bold">Services Dashboard</h2>
+        <h4 class="text">Q<?= $quarter ?> <?= $year ?></h4>
     </div>
+             <div class="row mb-3">
+       
+ <div class="col-md-8 mb-3">
+     <div class="card shadow-sm " style="background: white; border: 1px solid #ddd;height:200px">
+    <div class="row" style="height: 200px;">
+         
+<div class="col-md-4 d-flex align-items-center justify-content-center" style="border-right: 1px solid #dee2e6;">
+            <div class="text-center py-3 w-100">
+            
+                <img src="{{ asset('logo.png') }}" alt="Logo" style="width: 120px; height: 120px; object-fit: contain;">
+             <h2 class="fw-bold text-primary"  >Add Service  </h2>
+            </div>
+        </div>
+
+
+        <div class="col-md-8">
+            <div class="p-3">
+                <h2 class="fw-bold text-primary text-center"  > Service  </h2>
+             <form action="{{ route('servicesAvailed.store') }}" method="POST">
+                    @csrf
+                
+         
+                    
+<input type="hidden" name="sub_office_id" value="{{ $subOffice->id }}">
+    <input type="hidden" name="main_office_id" value="{{ $subOffice->main_office_id }}">
+
+                
+
+                    <div class="row align-items-center">
+                        
+                        <label for="service_name" class="col-sm-4 col-form-label">Service Name:</label>
+                        <div class="col-sm-8">
+                      
+                        <input type="text" class="form-control" id="service_name" name="service_name" required>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center mt-2">
+                        <label for="service_type" class="col-sm-4 col-form-label"> Service Type:</label>
+                        <div class="col-sm-8">
+                           <select class="form-control" id="service_type" name="service_type" required>
+            <option value="None" selected>None</option>
+            
+            <option value="External">External</option>
+            <option value="Internal">Internal</option>
+            <option value="Both">Both</option>
+
+        </select>
+                        </div>
+                    </div>
+ 
+
+                     <div class="row  mt-3 align-items-center">
+                          <div class="col-sm-4">
+
+                          </div>
+                        <div class="col-sm-8">
+                             <button type="submit" class="btn btn-sm btn-primary me-2 mb-1 w-100">Add Office</button>
+                       
+                        </div>
+                    </div>
+
+                     
+                </form>
+            </div>
+        </div>
     </div>
 </div>
+ </div>
+           
+
+ <div class="col-md-4 mb-3">
+  <div class="card shadow-sm h-100" style="max-height: 220px;"> <!-- Set your preferred max height -->
+    <div class="card-body text-center overflow-auto"> <!-- Allows scrolling if content exceeds max height -->
+      <div class="d-flex justify-content-center mb-2"></div>
+
+
+      <div class="fw-bold" style="font-size: 27px;min-height: 125px;">{{ $subOffice->sub_office_name }}</div>
+      <a href="{{ route('subOffices.show', $subOffice->main_office_id) }}" class="btn btn-secondary d-flex align-items-center justify-content-center">
+        Manage Sections 
+      </a>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="col-md-12 mb-2">
+  <div class="card shadow-sm" style="height: auto;">
+    <div class="card-body py-2 d-flex align-items-center justify-content-center">
+      <div class="d-flex align-items-center w-100" style="max-width: 100%;">
+        <!-- Icon -->
+        <div style="background-color: rgb(1, 129, 52); padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+          <img src="{{ asset('search_icon.svg') }}" style="width: 24px; height: 24px;">
+        </div>
+
+        <!-- Search input -->
+        <input type="text" id="officeSearch" class="form-control" placeholder="Find service...">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+    @forelse($services as $service)
+        <div class="col-md-{{ count($services) == 2 ? '6' : '4' }} mb-4 searchable-card">
+            <div class="card shadow-sm h-100">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <div class="mb-3">
+                        <div class="fw-bold service-name" style="font-size: 20px;">
+                            {{ $service->service_name }}
+                        </div>
+                        <div class="text-muted service-type" style="font-size: 14px;">
+                            Type: {{ ucfirst($service->services_type) }}
+                        </div>
+                        <hr class="my-3">
+                    </div>
+                    
+                    <div class="d-flex justify-content-center gap-2 flex-wrap">
+                        <a href="{{ route('servicesAvailed.edit', $service->id) }}"
+                           class="btn btn-sm btn-primary d-flex align-items-center justify-content-center text-nowrap"
+                           style="min-width: 90px; height: 38px; font-size: 14px;">
+                            Edit
+                        </a>
+
+                        <form action="{{ route('servicesAvailed.destroy', $service->id) }}" method="POST" onsubmit="return confirm('Are you sure?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit"
+                                    class="btn btn-sm btn-danger d-flex align-items-center justify-content-center text-nowrap"
+                                    style="min-width: 90px; height: 38px; font-size: 14px;">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @empty
+        <div class="col-12 text-center text-muted" id="no-services">No services found for this sub-office.</div>
+    @endforelse
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('officeSearch');
     if (searchInput) {
         searchInput.addEventListener('keyup', function() {
             const searchTerm = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#officeTable tbody tr.searchable-row');
+            const cards = document.querySelectorAll('.searchable-card');
+            let visibleCount = 0;
 
-            rows.forEach(row => {
-                const name = row.querySelector('.service-name').textContent.toLowerCase(); 
+            cards.forEach(card => {
+                const serviceName = card.querySelector('.service-name').textContent.toLowerCase();
+                const serviceType = card.querySelector('.service-type').textContent.toLowerCase();
 
-                if (name.includes(searchTerm)  ) {
-                    row.style.display = '';
+                if (serviceName.includes(searchTerm) || serviceType.includes(searchTerm)) {
+                    card.style.display = '';
+                    visibleCount++;
                 } else {
-                    row.style.display = 'none';
+                    card.style.display = 'none';
                 }
             });
+
+            // Show/hide "no results" message
+            const noServicesMessage = document.getElementById('no-services');
+            if (noServicesMessage) {
+                if (visibleCount === 0 && searchTerm !== '') {
+                    noServicesMessage.textContent = 'No services match your search.';
+                    noServicesMessage.style.display = '';
+                } else if (visibleCount === 0 && searchTerm === '') {
+                    noServicesMessage.textContent = 'No services found for this sub-office.';
+                    noServicesMessage.style.display = '';
+                } else {
+                    noServicesMessage.style.display = 'none';
+                }
+            }
         });
     }
 });
 </script>
-
 @endsection

@@ -1,7 +1,7 @@
 
 
 function loadTopServicePerSQD() {
-    fetch('Admin/top-service-per-sqd')
+    fetch('top-service-per-sqd')
         .then(response => response.json())
         .then(data => {
             if (!data.allOfficesPerSQD || Object.keys(data.allOfficesPerSQD).length === 0) {

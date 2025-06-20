@@ -1,6 +1,6 @@
 
 function loadTopSectionsPerSQD() {
-    fetch('Admin/top-section-per-sqd')
+    fetch('top-section-per-sqd')
         .then(response => response.json())
         .then(data => {
             if (!data.allOfficesPerSQD || Object.keys(data.allOfficesPerSQD).length === 0) {

@@ -1,6 +1,11 @@
 @extends('layout.layout_office')
 
 @section('content')
+<style>
+    .container{
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+</style>
 <div class="container p-2 mt-4" style="background-color: none;">
 <div style="
     background-color: #f8f9fa;
@@ -28,12 +33,17 @@
         <div class="col-md-3 col-sm-6 mb-3">
             <div class="card border-left-success h-100 shadow-sm">
                 <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col-auto">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="green" class="bi bi-check-circle" viewBox="0 0 16 16">
-                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                                <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
-                            </svg>
+                    <div class="row no-gutters  ">
+                        <div class="col-auto"  >
+                      <div class="col-auto align-self-start"  >
+  <div style="background-color:rgb(10, 148, 63);border-radius:50px;padding:10px">
+    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="white" class="bi bi-check-circle" viewBox="0 0 16 16">
+      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+      <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+    </svg>
+  </div>
+</div>
+
                         </div>
                         <div class="col ml-3">
                             <div class="text-lg font-weight-bold text-success text-uppercase mb-1">Submitted Services</div>
@@ -51,12 +61,14 @@
         <div class="col-md-3 col-sm-6 mb-3">
             <div class="card border-left-secondary h-100 shadow-sm">
                 <div class="card-body">
-                    <div class="row no-gutters align-items-center">
+                    <div class="row no-gutters ">
                         <div class="col-auto">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="gray" class="bi bi-exclamation-circle" viewBox="0 0 16 16">
+                        <div style="background-color:#5a5c69;border-radius:50px;padding:10px">  
+                        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="white" class="bi bi-exclamation-circle" viewBox="0 0 16 16">
                                 <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                                 <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
                             </svg>
+                        </div> 
                         </div>
                         <div class="col ml-3">
                             <div class="text-lg font-weight-bold text-secondary text-uppercase mb-1">Pending Services</div>
@@ -74,12 +86,16 @@
         <div class="col-md-3 col-sm-6 mb-3">
             <div class="card border-left-primary h-100 shadow-sm">
                 <div class="card-body">
-                    <div class="row no-gutters align-items-center">
+                    <div class="row no-gutters  ">
                         <div class="col-auto">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="#0d6efd" class="bi bi-building" viewBox="0 0 16 16">
+                              <div style="background-color:#0d6efd;border-radius:50px;padding:10px">  
+
+
+                            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="white" class="bi bi-building" viewBox="0 0 16 16">
                                 <path d="M4 2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1ZM4 5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM7.5 5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1Zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM4.5 8a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1Zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1Z"/>
                                 <path d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V1Zm11 0H3v14h3v-2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5V15h3V1Z"/>
                             </svg>
+                        </div>
                         </div>
                         <div class="col ml-3">
                             <div class="text-lg font-weight-bold text-primary text-uppercase mb-1">Completed Sections</div>
@@ -97,16 +113,19 @@
         <div class="col-md-3 col-sm-6 mb-3">
             <div class="card border-left-success h-100 shadow-sm">
                 <div class="card-body">
-                    <div class="row no-gutters align-items-center">
+                    <div class="row no-gutters  ">
                         <div class="col-auto">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="#1cc88a" class="bi bi-bar-chart" viewBox="0 0 16 16">
+                              <div style="background-color:rgb(10, 148, 63);border-radius:50px;padding:10px">  
+
+                            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="white" class="bi bi-bar-chart" viewBox="0 0 16 16">
                                 <path d="M4 11H2v3h2v-3zm5-4H7v7h2V7zm5-5v12h-2V2h2zm-2-1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1h-2zM6 7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zm-5 4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3z"/>
                             </svg>
+                              </div>
                         </div>
                         <div class="col ml-3">
                             <div class="text-lg font-weight-bold text-success text-uppercase mb-1">Total Transactions</div>
                             <div class="h4 mb-0 font-weight-bold text-gray-800" id="total-transactions">0</div>
-                            <div class="mt-2 small text-muted" id="avg-transactions">Avg: 0 per service</div>
+                            <div class="mt-2 small text-muted" id="avg-transactions"  style="display: none;">Avg: 0 per service</div>
                         </div>
                     </div>
                 </div>
@@ -119,9 +138,8 @@
         <!-- Services Submission Status -->
         <div class="col-lg-4 mb-3">
             <div class="card shadow-sm h-100" style="border:1px solid #ddd">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Submission Status by Service</h6>
-                </div>
+                                   <div class="m-0 font-weight-normal text-muted text-center pt-3">Submission Status by Service</div>
+
                 <div class="card-body">
                     <div class="chart-pie">
                         <canvas id="services-chart" height="300"></canvas>
@@ -133,9 +151,8 @@
         <!-- Transaction Completion by Section -->
         <div class="col-lg-8 mb-3">
             <div class="card shadow-sm h-100" style="border:1px solid #ddd">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Section Completion Rate</h6>
-                </div>
+                                                     <div class="m-0 font-weight-normal text-muted text-center pt-3">Section Completion Rate</div>
+
                 <div class="card-body">
                     <div class="chart-bar">
                         <canvas id="sections-completion-chart" height="300"></canvas>
@@ -150,9 +167,8 @@
         <!-- Transaction Count by Sub Office -->
         <div class="col-lg-8 mb-3">
             <div class="card shadow-sm h-100" style="border:1px solid #ddd">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Transaction Count by Section</h6>
-                </div>
+                                                 <div class="m-0 font-weight-normal text-muted text-center pt-3">Transaction Count by Section</div>
+
                 <div class="card-body">
                     <div class="chart-bar">
                         <canvas id="transaction-by-section-chart" height="300"></canvas>
@@ -163,14 +179,25 @@
         
         <!-- Service Distribution -->
         <div class="col-lg-4 mb-3">
-            <div class="card shadow-sm h-100" style="border:1px solid #ddd">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Most Transaction Count</h6>
-                </div>
-                <div class="card-body">
-                    <div id="top-services-container"></div>
-                </div>
-            </div>
+          <div class="card shadow-sm h-100" style="border:1px solid #ddd;">
+  <div class="d-flex align-items-center justify-content-center pt-3">
+    <!-- SVG Icon -->
+                                <!-- <div style="background-color:rgb(10, 148, 63);border-radius:50px;padding:10px">  
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="white" class="bi bi-bar-chart" viewBox="0 0 16 16">
+      <path d="M0 0h1v15h15v1H0V0z"/>
+      <path d="M10 10h1v3h-1v-3zM6 6h1v7H6V6zM2 3h1v10H2V3z"/>
+    </svg>
+                                </div> -->
+    <!-- Title -->
+    <span class="ms-2 text-muted fw-bold">Most Transaction Count</span>
+  </div>
+
+  <div class="card-body">
+    <div id="top-services-container"></div>
+  </div>
+</div>
+
         </div>
     </div>
     
@@ -354,7 +381,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     <td>${service.service_name}</td>
                                     <td>
                                         <span class="badge ${service.transaction_saved ? 'bg-primary' : 'bg-secondary'}">
-                                            ${service.transaction_saved ? 'Submitted' : 'Not Yet'}
+                                            ${service.transaction_saved ? 'Submitted' : 'Pending'}
                                         </span>
                                     </td>
                                     <td style="text-align:center">${service.count !== null ? service.count : ''}</td>

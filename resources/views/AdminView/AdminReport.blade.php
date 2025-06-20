@@ -1,82 +1,138 @@
 @extends('layout.general_layout')
 
 <title>@yield('title','Reports')</title>
-@section('content')
+@section('content') 
+<link rel="stylesheet" href="{{ asset('css/admin_dashboard.css') }}">
 
 <div class="wrapper"  > 
-  
+  <style>
+   
+  </style>
     <div class="content"> 
 @if($total_responses !=0)  
 <div class="container-fluid mt-3 mb-4">
+  <div class="col-12">
+            
+   <?php
+        $month = date('n'); // Numeric representation of the month (1–12)
+        $year = date('Y'); // Current year
+        $quarter = ceil($month / 3); // Determine the quarter
+    ?>
+    
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h2 class="fw-bold">Reports Dashboard</h2>
+        <h4 class="text">Q<?= $quarter ?> <?= $year ?></h4>
+    </div>
+        </div>
 
-
+ 
   <!-- Enhanced Dashboard Cards for Response Rates -->
 <div class="container-fluid mt-3 mb-4">
-    <div class="row">
-    <div class="col-12">
-            <h4 class="mt-0  mb-3">Reponse Rate</h4>
-        </div>
-        <!-- Card 1 - Overall Response Rate -->
-        <div class="col-md-4 mb-3">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Overall Response Rate</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="overall-response-rate">Loading...</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-percentage fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="dashboard-container" style="display: flex; flex-wrap: wrap; justify-content: space-between; padding-bottom: 10px; gap: 20px;">
 
-        <!-- Card 2 - External Response Rate -->
-        <div class="col-md-4 mb-3">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                External Response Rate</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="external-response-rate">Loading...</div>
-                        </div>
-                        <div class="col-auto">
-                        <div style="background-color:rgb(7, 166, 49); padding: 10px; border-radius: 50%;">
- 
-<img src="{{ asset('external.svg') }}" style="width:30px; height:30px;">
-</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Card 3 - Internal Response Rate -->
-        <div class="col-md-4 mb-3">
-            <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Internal Response Rate</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="internal-response-rate">Loading...</div>
-                        </div>
-                        <div class="col-auto">
-                        <div style="background-color:rgb(7, 73, 166); padding: 10px; border-radius: 50%;">
-
-<img src="{{ asset('internal.svg') }}" style="width:30px; height:30px;">
-</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <!-- Overall Response Rate -->
+  <div class="dashboard-card" style="flex: 1 1 calc(25% - 20px);">
+    <div class="card-body" style="border: none;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+       
+          <h2 id="overall-response-rate" class="card-number  " style="color:#388E3C">0%</h2>
+        
+        <div style="background-color: #388E3C; padding: 10px; border-radius: 50%;">
+            <img src="{{ asset('folders.svg') }}" style="width: 50px; height: 50px;">
         </div>
     </div>
+    <h5 class="card-title">Overall Response Rate</h5>
+      <p class="card-subtext">All form types combined</p>
+    </div>
+  </div>
 
+  <!-- External Response Rate -->
+  <div class="dashboard-card" style="flex: 1 1 calc(25% - 20px);">
+    <div class="card-body" style="border: none;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+      
+          <h2 id="external-response-rate" class="card-number " style="color:#00796B">0%</h2>
+      
+        <div style="background-color: #00796B; padding: 10px; border-radius: 50%;">
+            <img src="{{ asset('external.svg') }}" style="width: 50px; height: 50px;">
+        </div>
+    </div>
+    <h5 class="card-title">External Response Rate</h5>
+      <p class="card-subtext">From citizens & businesses</p>
+    </div>
+  </div>
+
+  <!-- Internal Response Rate -->
+  <div class="dashboard-card" style="flex: 1 1 calc(25% - 20px);">
+    <div class="card-body" style="border: none;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+       
+          <h2 id="internal-response-rate" class="card-number " style="color:#0288D1">0%</h2>
+        
+        <div style="background-color: #0288D1; padding: 10px; border-radius: 50%;">
+          <img src="{{ asset('internal.svg') }}" style="width: 50px; height: 50px;">
+        </div>
+      </div>
+      <h5 class="card-title">Internal Response Rate</h5>
+      <p class="card-subtext">From government employees</p>
+    </div>
+  </div>
+
+  <!-- More Report -->
+
+
+</div>
+
+
+
+ 
+
+
+
+
+<div class="dashboard-container" style="display: flex; flex-wrap: wrap; justify-content: space-between; padding-bottom: 10px; gap: 20px;">
+  <div class="dashboard-card" style="flex: 1 1 calc(25% - 20px);">
+    <div class="card-body" style="border: none;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+      
+            <div>          <h3 class="card-title text-dark" ><b> More Result</b></h3>
+                <h5 class="card-title">Detailed Reports</h5>
+    </div>
+
+        <div class="bg-primary" style="  padding: 10px; border-radius: 50%;">
+          <img src="{{ asset('table.svg') }}" style="width: 30px; height: 30px;">
+        </div>
+      </div>
+
+      <p class="card-subtext"><a href="{{ url('reports') }}" class="btn btn-sm btn-primary mt-2">View</a></p>
+ 
+    </div>
+  </div>
+
+
+  <div class="dashboard-card mb-3" style="flex: 1 1 calc(70% - 20px);">
+    <div class="card-body d-flex justify-content-between" style="border: none;">
+      <div>
+        <h6 class="mb-2"><strong>About this page</strong></h6>
+        <p class="mb-2 text-muted" style="max-width: 90%;">
+         This dashboard presents a <strong> comprehensive overview of survey response rates</strong>, focusing on the computation and presentation of data collected from both internal and external services. It summarizes key metrics such as the overall response rate
+        </p>
+      </div>
+     
+  <div style="width: 50px; height: 50px;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#1976D2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      style="width: 100%; height: 100%;" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="16" x2="12" y2="12"></line>
+      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+    </svg>
+  </div>
+    </div>
+  </div>
+</div>
+
+  </div>
     <!-- SQD Score Overview Cards -->
     <div class="row">
         <div class="col-12">
@@ -85,10 +141,11 @@
     </div>
     <div class="row">
         <!-- External Services SQD Overview Card -->
-        <div class="col-md-6 mb-3">
-            <div class="card shadow h-100">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between" style="background-color: #f8f9fc;">
-                    <h6 class="text-xs font-weight-bold text-success text-uppercase   m-0">External Services SQD</h6>
+        <div class="col-md-4 mb-3">
+            <div class="card shadow h-100 border-0">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between" 
+                style="background-color:rgb(7, 166, 49)">
+                    <h6 class="text-xs font-weight-bold text-white text-uppercase   m-0">External Services SQD</h6>
                 </div>
                 <div class="card-body">
                     <div id="external-sqd-overview">
@@ -112,11 +169,13 @@
                             </div>
                             <!-- We'll only show 4 on this overview to save space -->
                         </div>
-                        <div class="text-center mt-3">
-                            <div class="btn btn-sm btn-primary " onclick="toggleExtSQDDetails()">Show All SQDs</div>
-                        </div>
+                        <!-- <div class="text-center mt-3">
+                            <div class="btn btn-sm btn-primary fw-bold" 
+                            style="font-family: Verdana, Geneva, Tahoma, sans-serif;"
+                            onclick="toggleExtSQDDetails()">Show All SQDs</div>
+                        </div> -->
                         <!-- Hidden detailed SQDs -->
-                        <div id="ext-sqd-details" style="display: none;">
+                        <div id="ext-sqd-details"  >
                            <h4 class="small font-weight-bold">Costs <span class="float-right" id="ext-sqd5-score">0%</span></h4>
                             <div class="progress mb-2">
                                 <div class="progress-bar  " role="progressbar" id="progress-ext-sqd5" style="width: 0%"></div>
@@ -140,10 +199,11 @@
         </div>
 
         <!-- Internal Services SQD Overview Card -->
-        <div class="col-md-6 mb-3">
-            <div class="card shadow h-100">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between" style="background-color: #f8f9fc;">
-                    <h6 class="text-xs font-weight-bold text-primary text-uppercase m-0">Internal Services SQD</h6>
+        <div class="col-md-4 mb-3">
+            <div class="card shadow h-100 border-0">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between"
+                 style="background-color:rgb(7, 73, 166);color:white">
+                    <h6 class="text-xs font-weight-bold text-white   text-uppercase m-0">Internal Services SQD</h6>
                 </div>
                 <div class="card-body">
                     <div id="internal-sqd-overview">
@@ -167,11 +227,12 @@
                           <div class="progress mb-2">
                               <div class="progress-bar  " role="progressbar" id="progress-int-sqd5" style="width: 0%"></div>
                           </div>
-                          <div class="text-center mt-3">
-                            <div class="btn btn-sm btn-primary" onclick="toggleIntSQDDetails()">Show All SQDs</div>
-                          </div>
+                          <!-- <div class="text-center mt-3">
+                              <div class="btn btn-sm btn-primary fw-bold" 
+                            style="font-family: Verdana, Geneva, Tahoma, sans-serif;" onclick="toggleIntSQDDetails()">Show All SQDs</div>
+                          </div> -->
                           <!-- Hidden detailed SQDs -->
-                          <div id="int-sqd-details" style="display: none;">
+                          <div id="int-sqd-details"  >
                           <h4 class="small font-weight-bold">Costs <span class="float-right" id="int-sqd4-score">0%</span></h4>
                           <div class="progress mb-2">
                               <div class="progress-bar" role="progressbar" id="progress-int-sqd4" style="width: 0%"></div>
@@ -193,18 +254,16 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- Overall SQD Score Card -->
-    <div class="row">
-        <div class="col-md-12 mb-4">
-            <div class="card shadow h-100">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between" style="background-color: #f8f9fc;">
-                    <h6 class="text-xs font-weight-bold text-dark text-uppercase m-0">Overall SQD Performance</h6>
+  
+        <div class="col-md-4 mb-4">
+            <div class="card shadow h-100 border-0 ">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between" 
+                style="background-color:rgb(119, 119, 119)">
+                    <h6 class="text-xs font-weight-bold text-white text-uppercase m-0">Overall SQD Performance</h6>
                 </div>
                 <div class="card-body">
                     <div class="chart-area">
-                        <canvas id="overallSqdChart" width="100%" height="400" style="border:1px solid black"></canvas>
+                        <canvas id="overallSqdChart" width="100%" height="400"  ></canvas>
                     </div>
                 </div>
             </div>
@@ -369,13 +428,13 @@ function createOverallSQDChart(data) {
                 {
                     label: 'External Services',
                     data: externalScores,
-                    backgroundColor: 'rgb(0, 139, 232)',
+                    backgroundColor: 'rgb(7, 166, 49)',
                     
                 },
                 {
                     label: 'Internal Services',
                     data: internalScores,
-                    backgroundColor: 'rgb(0, 170, 88)',
+                    backgroundColor: 'rgb(7, 73, 166)',
                    
                 }
             ]
@@ -409,27 +468,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
      
 </div>
-<div class="container-fluid " style="width: 100%; background-color:white;
+
+
+   <?php
+        $month = date('n'); // Numeric representation of the month (1–12)
+        $year = date('Y'); // Current year
+        $quarter = ceil($month / 3); // Determine the quarter
+    ?>
+    
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-2"
+    
+    style="">
+        <h2 class="fw-bold">Printable Generated Report</h2>
+        <h4 class="text"> as of Q<?= $quarter ?> <?= $year ?></h4>
+    </div>
+<div class="container-fluid pt-3" style="width: 100%; background-color:white;
 
 border:1px solid #ddd;
 ">
    
 
     
-<div style="background-color:rgb(20, 160, 88); width:fit-content;height:60px;
-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-color:white;
-font-size:30px;
-text-align:left;
-padding:10px;
-padding-right:20px;
-transform:translateY(-20px);border-radius:5px;
-
-
-margin-left:10px;margin-right:10px"> 
-Printable Document Report
  
-    </div>
  
  <style>
       .office-header {
@@ -638,19 +699,39 @@ Printable Document Report
 
 <style>
   .print-button {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 9999;
-  }
+     position: fixed;
+                bottom: 30px;
+                right: 30px;
+                background-color: #2196F3;
+                color: white;
+                border: none;
+                border-radius: 50px;
+                padding: 15px 20px;
+                font-size: 16px;
+                cursor: pointer;
+                box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+                transition: all 0.3s ease;
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+  } .print-icon {
+                width: 20px;
+                height: 20px;
+            }
+
 </style>
 
-<button class="btn btn-primary mb-3 print-button" onclick="window.print()">Print as PDF</button>
+<button class="btn btn-primary mb-3 print-button" onclick="window.print()">
+   <svg class="print-icon" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd"></path>
+            </svg>    
+Print  </button>
 
   <!-- <h2 class="mb-4">Response Rate Per Service</h2> -->
   
   <!-- External Service Section -->
-<div id="printableArea">
+<div id="printableArea" style="color:#333;">
   <!-- External Service Section -->
   <h2 id="externalServiceTitle" class="mb-1"></h2>
   <table class="table table-bordered">
@@ -662,11 +743,13 @@ Printable Document Report
 </table>
 
   <style>
+    
     .officeSummaries{
         margin:0px; 
+        color:#333;
     }
     .summary{
-        margin-top: 20px; ;
+        margin-top: 20px; color:#333;
     }
 </style>
 
@@ -1348,6 +1431,25 @@ fetch('/response-rate-per-service-all')
     })
     .catch(error => console.error('Error fetching data:', error));
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

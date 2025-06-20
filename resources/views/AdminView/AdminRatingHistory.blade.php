@@ -3,295 +3,27 @@
 @section('title', 'Admin Dashboard')
 
 @section('content')
+<link rel="stylesheet" href="{{ asset('css/admin_dashboard.css') }}">
 <div class="container-fluid p-0">
     <!-- Dashboard Header -->
 
 
-
-    <div class="card shadow-sm mt-4">
-    <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
-        <h6 class="fw-bold mb-0">
-            <i class="fas fa-chart-line text-primary me-2"></i>Overall Survey Score by Quarter
-        </h6>
-        <div class="btn-group btn-group-sm" role="group" aria-label="Chart period selector">
-            <button type="button" class="btn btn-outline-primary active" data-period="quarterly">Quarterly</button>
-            <button type="button" class="btn btn-outline-primary" data-period="yearly">Yearly</button>
-        </div>
+   <?php
+        $month = date('n'); // Numeric representation of the month (1–12)
+        $year = date('Y'); // Current year
+        $quarter = ceil($month / 3); // Determine the quarter
+    ?>
+    
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h2 class="fw-bold">Rating History Dashboard</h2>
+        <h4 class="text">Q<?= $quarter ?> <?= $year ?></h4>
     </div>
-    <div class="card-body">
-        <div id="chartContainer" style="position: relative; height: 300px;">
-            <canvas id="quarterlyLineChart"></canvas>
-            <div id="chartLoading" class="d-flex justify-content-center align-items-center position-absolute top-0 start-0 w-100 h-100 bg-white bg-opacity-75">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-            </div>
-            <div id="noDataMessage" class="d-none d-flex justify-content-center align-items-center position-absolute top-0 start-0 w-100 h-100">
-                <div class="text-center text-muted">
-                    <i class="fas fa-chart-bar fa-3x mb-3"></i>
-                    <p>No survey data available for this period</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card-footer bg-white border-0 p-3">
-        <div class="row align-items-center">
-            <div class="col-md-6">
-                <div class="d-flex align-items-center">
-                    <div class="me-3">
-                        <span class="badge bg-success p-2" id="currentScore">--</span>
-                    </div>
-                    <div>
-                        <h6 class="mb-0 small fw-bold">Current Quarter Score</h6>
-                        <p class="text-muted mb-0 small" id="scoreChange">
-                            <i class="fas fa-arrow-up text-success me-1"></i>
-                            <span>--% from previous quarter</span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 text-md-end mt-3 mt-md-0">
-                <select class="form-select form-select-sm d-inline-block w-auto" id="chartStyle">
-                    <option value="line">Line Chart</option>
-                    <option value="bar">Bar Chart</option>
-                    <option value="area">Area Chart</option>
-                </select>
-            </div>
-        </div>
-    </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    // Chart configuration
-    let chartInstance = null;
-    const chartColors = {
-        primary: 'rgba(59, 130, 246, 1)', // Blue
-        primaryLight: 'rgba(59, 130, 246, 0.2)',
-        success: 'rgba(16, 185, 129, 1)', // Green
-        warning: 'rgba(245, 158, 11, 1)', // Amber
-        danger: 'rgba(239, 68, 68, 1)',   // Red
-        grid: 'rgba(203, 213, 225, 0.5)'  // Slate gray
-    };
-    
-    // Initial load
-    loadChartData('quarterly');
-    
-    // Period selector buttons
-    document.querySelectorAll('[data-period]').forEach(button => {
-        button.addEventListener('click', function() {
-            // Update active state
-            document.querySelectorAll('[data-period]').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            this.classList.add('active');
-            
-            // Load data for selected period
-            loadChartData(this.dataset.period);
-        });
-    });
-    
-    // Chart style selector
-    document.getElementById('chartStyle').addEventListener('change', function() {
-        if (chartInstance) {
-            updateChartStyle(this.value);
-        }
-    });
-    
-    function loadChartData(period) {
-        // Show loading indicator
-        document.getElementById('chartLoading').classList.remove('d-none');
-        document.getElementById('noDataMessage').classList.add('d-none');
-        
-        // Fetch data from API
-        const endpoint = period === 'yearly' ? 
-            'Admin/api/yearly-survey-scores' : 
-            'Admin/api/quarterly-survey-scores';
-            
-        fetch(endpoint)
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Check the correct data key based on the period
-                    const scoresKey = period === 'yearly' ? 'yearly_scores' : 'quarterly_scores';
-                    
-                    if (data[scoresKey] && data[scoresKey].length > 0) {
-                        renderChart(data[scoresKey], period);
-                        updateStatistics(data[scoresKey]);
-                    } else {
-                        // Show no data message
-                        document.getElementById('noDataMessage').classList.remove('d-none');
-                        if (chartInstance) {
-                            chartInstance.destroy();
-                            chartInstance = null;
-                        }
-                    }
-                } else {
-                    // Show no data message
-                    document.getElementById('noDataMessage').classList.remove('d-none');
-                }
-            })
-            .catch(error => {
-                console.error("Failed to load chart data:", error);
-                document.getElementById('noDataMessage').classList.remove('d-none');
-            })
-            .finally(() => {
-                // Hide loading indicator
-                document.getElementById('chartLoading').classList.add('d-none');
-            });
-    }
-    
-    function renderChart(data, period) {
-        // Generate labels based on period type
-        const labels = period === 'yearly' 
-            ? data.map(item => `${item.year}`)
-            : data.map(item => `${item.quarter} ${item.year}`);
-           
-        const scores = data.map(item => item.overallScore);
-        
-        const ctx = document.getElementById('quarterlyLineChart').getContext('2d');
-        
-        // Determine chart type
-        const chartStyle = document.getElementById('chartStyle').value;
-        
-        // Destroy previous chart if exists
-        if (chartInstance) {
-            chartInstance.destroy();
-        }
-        
-        // Create new chart
-        chartInstance = new Chart(ctx, {
-            type: chartStyle === 'area' ? 'line' : chartStyle,
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: period === 'yearly' ? 'Yearly Score' : 'Quarterly Score',
-                    data: scores,
-                    fill: chartStyle === 'area',
-                    backgroundColor: chartStyle === 'area' ? chartColors.primaryLight : chartColors.primary,
-                    borderColor: chartColors.primary,
-                    tension: 0.3,
-                    pointBackgroundColor: chartColors.primary,
-                    pointRadius: 5,
-                    pointHoverRadius: 7
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 1,
-                        grid: {
-                            color: chartColors.grid
-                        },
-                        ticks: {
-                            callback: function(value) {
-                                return (value * 100) + '%';
-                            }
-                        }
-                    },
-                    x: {
-                        grid: {
-                            color: chartColors.grid
-                        }
-                    }
-                },
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { 
-                        display: true,
-                        position: 'top' 
-                    },
-                    tooltip: { 
-                        enabled: true,
-                        callbacks: {
-                            label: function(context) {
-                                return `Score: ${(context.raw * 100).toFixed(1)}%`;
-                            }
-                        }
-                    }
-                }
-            }
-        });
-    }
-    
-    function updateChartStyle(style) {
-        if (!chartInstance) return;
-        
-        const data = chartInstance.data;
-        
-        // Update chart type and styling
-        if (style === 'area') {
-            chartInstance.config.type = 'line';
-            chartInstance.data.datasets[0].fill = true;
-            chartInstance.data.datasets[0].backgroundColor = chartColors.primaryLight;
-        } else {
-            chartInstance.config.type = style;
-            chartInstance.data.datasets[0].fill = false;
-            chartInstance.data.datasets[0].backgroundColor = style === 'line' ? 
-                chartColors.primary : chartColors.primary;
-        }
-        
-        chartInstance.update();
-    }
-    
-    function updateStatistics(data) {
-        if (data.length < 1) return;
-        
-        // Get current and previous scores
-        const currentScore = data[data.length - 1].overallScore;
-        const previousScore = data.length > 1 ? data[data.length - 2].overallScore : 0;
-        
-        // Calculate percent change
-        let percentChange = 0;
-        let changeDirection = 'equal';
-        
-        if (previousScore > 0) {
-            percentChange = ((currentScore - previousScore) / previousScore) * 100;
-            changeDirection = percentChange > 0 ? 'up' : (percentChange < 0 ? 'down' : 'equal');
-        }
-        
-        // Update UI elements
-        document.getElementById('currentScore').textContent = `${(currentScore * 100).toFixed(1)}%`;
-        
-        const scoreChangeEl = document.getElementById('scoreChange');
-        const period = document.querySelector('[data-period].active').dataset.period;
-        const periodText = period === 'yearly' ? 'year' : 'quarter';
-        
-        if (changeDirection === 'up') {
-            scoreChangeEl.innerHTML = `
-                <i class="fas fa-arrow-up text-success me-1"></i>
-                <span>${Math.abs(percentChange).toFixed(1)}% from previous ${periodText}</span>
-            `;
-        } else if (changeDirection === 'down') {
-            scoreChangeEl.innerHTML = `
-                <i class="fas fa-arrow-down text-danger me-1"></i>
-                <span>${Math.abs(percentChange).toFixed(1)}% from previous ${periodText}</span>
-            `;
-        } else {
-            scoreChangeEl.innerHTML = `
-                <i class="fas fa-equals text-muted me-1"></i>
-                <span>No change from previous ${periodText}</span>
-            `;
-        }
-        
-        // Set color of current score badge based on value
-        const scoreElement = document.getElementById('currentScore');
-        if (currentScore >= 0.75) {
-            scoreElement.className = 'badge bg-success p-2';
-        } else if (currentScore >= 0.5) {
-            scoreElement.className = 'badge bg-warning p-2';
-        } else {
-            scoreElement.className = 'badge bg-danger p-2';
-        }
-    }
-});
-</script>
+ 
 
 
-    <div class="row mb-4">
+    <!-- <div class="row mb-4">
         <div class="col-12">
             <div class="card shadow-sm border-0">
             <div class="card-body">
@@ -304,87 +36,197 @@ document.addEventListener("DOMContentLoaded", function () {
 
             </div>
         </div>
+    </div> -->
+
+<br>
+
+
+<div class="dashboard-container" style="display: flex; flex-wrap: wrap; justify-content: space-between; padding-bottom: 10px;">
+
+  <!-- Filters Card (1st) -->
+<div class="dashboard-card" style="flex: 1 1 calc(15% - 20px);">
+  <div class="card-body" style="border: none;">
+    <div style="display: flex; align-items: flex-start; justify-content: space-between;">
+      <div style="flex: 1;">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+     
+        <h2 class="card-number text-secondary mb-2">Filter</h2>
+   
+      <div style="background-color: #6c757d; padding: 10px; border-radius: 50%; margin-left: 15px;">
+            <svg  height="50" width="50"  fill="#ffffff" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H5V10h14v11zm0-13H5V5h14v3z"/></svg>
+            
+    <path d="M4 4h16l-6 8v5l-4 3v-8l-6-8z"></path>
+    <!-- Dropdown arrow -->
+    <polyline points="9 17 12 20 15 17"></polyline>
+  </svg>
+      </div>
+    </div>
+        <h5 class="card-title mb-0">Data Selection</h5>
+
+        <div class="mb-3">
+          <label for="year" class="form-label">Year</label>
+          <select name="year" id="year" class="form-select form-select-sm">
+            <option value="">Select Year</option>
+            @foreach($years_cb as $year)
+              <option value="{{ $year }}" {{ (request('year') ?? $currentYear) == $year ? 'selected' : '' }}>
+                {{ $year }}
+              </option>
+            @endforeach
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="quarter" class="form-label">Quarter</label>
+          <select name="quarter" id="quarter" class="form-select form-select-sm">
+            <option value="">Select Quarter</option>
+            @foreach($quarter_cb as $quarter)
+              <option value="{{ $quarter }}" {{ (request('quarter') ?? $currentQuarter) == $quarter ? 'selected' : '' }}>
+                Quarter {{ $quarter }}
+              </option>
+            @endforeach
+          </select>
+        </div>
+
+        <button type="button" class="btn btn-primary btn-sm w-100 mt-2" onclick="getData()">
+          Get Ratings
+        </button>
+      </div>
+
+     
     </div>
 
-    <!-- Filters Card -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <h5 class="card-title mb-3">
-                        <i class="fas fa-filter text-secondary me-2"></i>
-                        Data Filters
-                    </h5>
-                    
-                    <form id="surveyForm" class="row g-3 align-items-end">
-                        <div class="col-md-4 col-sm-6">
-                            <div class="form-group">
-                                <label for="year" class="form-label">Year</label>
-                                <select name="year" id="year" class="form-select form-select-lg">
-                                    <option value="">Select Year</option>
-                                    @foreach($years_cb as $year)
-                                        <option value="{{ $year }}" 
-                                            {{ (request('year') ?? $currentYear) == $year ? 'selected' : '' }}>
-                                            {{ $year }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
+    <!-- <p class="card-subtext mt-3">Filter by quarter and year</p> -->
+  </div>
+</div>
 
-                        <div class="col-md-4 col-sm-6">
-                            <div class="form-group">
-                                <label for="quarter" class="form-label">Quarter</label>
-                                <select name="quarter" id="quarter" class="form-select form-select-lg">
-                                    <option value="">Select Quarter</option>
-                                    @foreach($quarter_cb as $quarter)
-                                        <option value="{{ $quarter }}" 
-                                            {{ (request('quarter') ?? $currentQuarter) == $quarter ? 'selected' : '' }}>
-                                            Quarter {{ $quarter }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-4 col-sm-12">
-                            <button type="button" class="btn btn-primary btn-lg w-100" onclick="getData()">
-                                <i class="fas fa-history me-2"></i>Get Ratings
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+
+  <!-- Total Offices Card (2nd) -->
+<!-- Total Offices -->
+<div style="flex: 1 1 calc(50% - 20px);">
+    <div class="d-flex mb-3 gap-3"> 
+
+<div class="dashboard-card" style="flex: 1 1 calc(25% - 20px);">
+  <div class="card-body" style="border: none;">
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      
+        <h2 id="totalOffices" class="card-number text-primary">0</h2>
+     
+      <div style="background-color: #007bff; padding: 10px; border-radius: 50%;">
+        <svg width="50" height="50" fill="#fff" viewBox="0 0 24 24">
+          <path d="M3 21v-2h18v2H3zm16-4V5H5v12h14zM7 11h2v2H7v-2zm0-4h2v2H7V7zm4 4h2v2h-2v-2zm0-4h2v2h-2V7zm4 4h2v2h-2v-2zm0-4h2v2h-2V7z"/>
+        </svg>
+      </div>
     </div>
+        <h5 class="card-title">Total Offices</h5>
+    <p class="card-subtext">Offices handling services</p>
+  </div>
+</div>
 
-    <!-- Statistics Row -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="card-subtitle text-muted">Total Offices</h6>
-                        <span class="badge bg-primary rounded-pill"><i class="fas fa-building"></i></span>
-                    </div>
-                    <h2 class="card-title mb-0" id="totalOffices">0</h2>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-6">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="card-subtitle text-muted">Total Responses</h6>
-                        <span class="badge bg-success rounded-pill"><i class="fas fa-clipboard-check"></i></span>
-                    </div>
-                    <h2 class="card-title mb-0" id="totalResponses">0</h2>
-                </div>
-            </div>
-        </div>
+<!-- Total Responses -->
+<div class="dashboard-card" style="flex: 1 1 calc(25% - 20px);">
+  <div class="card-body" style="border: none;">
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+     
+        <h2 id="totalResponses" class="card-number text-success">0</h2>
+     
+      <div style="background-color: #28a745; padding: 10px; border-radius: 50%;">
+        <svg width="50" height="50" fill="#fff" viewBox="0 0 24 24">
+          <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0
+                   c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2
+                   c-2.33 0-7 1.17-7 3.5V19h14v-2.5C15 14.17 10.33 13 8 13zm8 0
+                   c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 
+                   3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+        </svg>
+      </div>
     </div>
+        <h5 class="card-title">Total Responses</h5>
 
+    <p class="card-subtext">Survey forms submitted</p>
+  </div>
+</div>
+
+<div class="dashboard-card" style="flex: 1 1 calc(25% - 20px);">
+  <div class="card-body" style="border: none;">
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+     
+              <h2 class="card-number" id="satisfactionRate">0%</h2>
+        <!-- <h5 class="card-title">Overall</h5> -->
+     
+    <div style="background-color: #28a745; padding: 10px; border-radius: 50%;">
+           <svg viewBox="0 0 24 24" width="50" height="50" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M20 20V13M12 20V10M4 20L4 16M13.4067 5.0275L18.5751 6.96567M10.7988 5.40092L5.20023 9.59983M21.0607 6.43934C21.6464 7.02513 21.6464 7.97487 21.0607 8.56066C20.4749 9.14645 19.5251 9.14645 18.9393 8.56066C18.3536 7.97487 18.3536 7.02513 18.9393 6.43934C19.5251 5.85355 20.4749 5.85355 21.0607 6.43934ZM5.06066 9.43934C5.64645 10.0251 5.64645 10.9749 5.06066 11.5607C4.47487 12.1464 3.52513 12.1464 2.93934 11.5607C2.35355 10.9749 2.35355 10.0251 2.93934 9.43934C3.52513 8.85355 4.47487 8.85355 5.06066 9.43934ZM13.0607 3.43934C13.6464 4.02513 13.6464 4.97487 13.0607 5.56066C12.4749 6.14645 11.5251 6.14645 10.9393 5.56066C10.3536 4.97487 10.3536 4.02513 10.9393 3.43934C11.5251 2.85355 12.4749 2.85355 13.0607 3.43934Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+
+</div>
+
+    </div>
+                <h5 class="card-title" id="satisfactionText">Loading...</h5>    
+
+    <p class="card-subtext">Overall Rating</p>
+  </div>
+</div>
+
+<script>
+    function loadOverallScore() {
+    fetch('Admin/overall-total-score')
+        .then(response => response.json())
+        .then(data => {
+            const score = data.overallScore;
+            const satisfactionRate = (score * 100).toFixed(2);
+            document.getElementById("satisfactionRate").textContent = satisfactionRate + "%";
+ 
+
+            let satisfactionText = '';
+            let iconPath = '';
+
+            if (score < 0.60) {
+                satisfactionText = 'Poor'; 
+                document.getElementById('satisfactionText').style.color = '#F44336';
+            } else if (score >= 0.60 && score < 0.80) {
+                satisfactionText = 'Fair'; 
+                document.getElementById('satisfactionText').style.color = '#FF9800';
+            } else if (score >= 0.80 && score < 0.95) {
+                satisfactionText = 'Satisfactory'; 
+                document.getElementById('satisfactionText').style.color = '#4CAF50';
+            } else {
+                satisfactionText = 'Outstanding'; 
+                document.getElementById('satisfactionText').style.color = '#388E3C';
+            }
+
+            document.getElementById('satisfactionText').textContent = satisfactionText;
+        });
+
+}
+document.addEventListener("DOMContentLoaded", function () {
+    loadOverallScore(); 
+});
+</script>
+
+</div>
+
+<div class="dashboard-card mb-3" style="flex: 1 1 calc(100% - 20px);">
+    <div class="card-body d-flex justify-content-between" style="border: none;">
+      <div>
+        <h6 class="mb-2"><strong>About this page</strong></h6>
+        <p class="mb-2 text-muted" style="max-width: 90%;">
+          This dashboard presents analytics based on the <strong>survey data collected</strong> through forms. It highlights satisfaction rates, response counts, and breakdowns by quarter, year, and section performance.
+        </p>
+      </div>
+     
+  <div style="width: 50px; height: 50px;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#1976D2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      style="width: 100%; height: 100%;" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="16" x2="12" y2="12"></line>
+      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+    </svg>
+  </div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+
+<div class="text mb-2">Result</div>
     <!-- Chart Card -->
     <div class="row mb-4">
         <div class="col-12">

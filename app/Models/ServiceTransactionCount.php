@@ -7,5 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class ServiceTransactionCount extends Model
 {
     protected $fillable = ['service_id', 'transaction_count', 'quarter','year']; 
+public function service()
+{
+    return $this->belongsTo(Service::class);
+}
 
 }

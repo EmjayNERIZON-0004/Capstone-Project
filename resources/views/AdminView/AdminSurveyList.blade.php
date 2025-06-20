@@ -3,85 +3,215 @@
 @yield('sidebar')
 @section('content')
 <link rel="stylesheet" href="{{ asset('css/admin_survey_list.css') }}">
+<link rel="stylesheet" href="{{ asset('css/admin_dashboard.css') }}">
 
     <div class="wrapper">
         <div class="content">
-            <div class="container mt-4">
-            <div class="d-flex justify-content-between align-items-center mt-5 mb-3" 
-    style="background-color: white; ">
-
-<div style="background-color:rgb(20, 160, 88); width:fit-content;height:60px;
-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-color:white;
-font-size:30px;
-text-align:left;
-padding:10px;
-padding-right:20px;
-transform:translateY(-20px);border-radius:5px;
+            <div class="container ">
 
 
-margin-left:10px;margin-right:10px"> 
-Survey List Response
 
+   <?php
+        $month = date('n'); // Numeric representation of the month (1–12)
+        $year = date('Y'); // Current year
+        $quarter = ceil($month / 3); // Determine the quarter
+    ?>
+    
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h2 class="fw-bold">Survey Dashboard</h2>
+        <h4 class="text">Q<?= $quarter ?> <?= $year ?></h4>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+    <div class="card p-3 mb-3 mt-3">
+    <h5>Survey Response Counts</h5>
+
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <label for="modeSelect">Select Mode</label>
+            <select id="modeSelect" class="form-select" onchange="loadResponseChart()">
+                <option value="weekly">Weekly</option>
+                <option value="monthly" selected>Monthly</option>
+                <option value="quarterly">Quarterly</option>
+                <option value="yearly">Yearly</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="yearSelect">Select Year</label>
+            <select id="yearSelect" class="form-select" onchange="loadResponseChart()">
+                @for ($y = now()->year; $y >= 2020; $y--)
+                    <option value="{{ $y }}">{{ $y }}</option>
+                @endfor
+            </select>
+        </div>
+    </div>
+
+    <div style="height: 400px;">
+        <canvas id="responseChart" style="width: 100%; height: 100%;"></canvas>
+    </div>
 </div>
-<style>
-    .content{
-        font-family: sans-serif;
-    }
-</style>
-<div class="d-flex me-5 gap-2" style="  width:40%" >
-<div class=" " style="width: 100%; padding-left:0px">
-    <input 
-        type="text" 
-        id="searchInput" 
-        class="form-control custom-search-bar" 
-        placeholder="Search responses..."
-        @if($total_responses == 0) disabled @endif
-    >
-</div>
-<div >
-<button class="sort-button" id="sortButton" title="Sort">
-    <i class="fas fa-sort"></i>
-</button></div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+let responseChartInstance;
+
+function loadResponseChart() {
+    const year = document.getElementById('yearSelect').value;
+    const mode = document.getElementById('modeSelect').value;
+
+    fetch(`response-counts/${year}/${mode}`)
+        .then(res => res.json())
+        .then(data => {
+            const labels = data.map(item => item.label);
+            const counts = data.map(item => item.count);
+
+            // Destroy old chart
+            if (responseChartInstance) {
+                responseChartInstance.destroy();
+            }
+
+            const ctx = document.getElementById('responseChart').getContext('2d');
+            responseChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Survey Responses',
+                        data: counts,
+                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Responses'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: mode.charAt(0).toUpperCase() + mode.slice(1)
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: context => `${context.raw} responses`
+                            }
+                        }
+                    }
+                }
+            });
+        });
+}
+ 
+document.addEventListener('DOMContentLoaded', loadResponseChart);
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class="dashboard-container" style="  display: flex; flex-wrap: wrap;  justify-content: space-between;padding-bottom:10px">
+      
+<div class="dashboard-card" style="flex: 1 1 calc(20% - 20px);">
+  <div class="card-body" style="border: none;">
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+     
+        <h2  class="card-number text-primary">{{ $overall_responses }}</h2>
+      
+
+       
+     <div style="background-color: #2196F3; padding: 10px; border-radius: 50%;">
+                    <svg viewBox="0 0 24 24" width="50 " hieght=" 50" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M16 4C16.93 4 17.395 4 17.7765 4.10222C18.8117 4.37962 19.6204 5.18827 19.8978 6.22354C20 6.60504 20 7.07003 20 8V17.2C20 18.8802 20 19.7202 19.673 20.362C19.3854 20.9265 18.9265 21.3854 18.362 21.673C17.7202 22 16.8802 22 15.2 22H8.8C7.11984 22 6.27976 22 5.63803 21.673C5.07354 21.3854 4.6146 20.9265 4.32698 20.362C4 19.7202 4 18.8802 4 17.2V8C4 7.07003 4 6.60504 4.10222 6.22354C4.37962 5.18827 5.18827 4.37962 6.22354 4.10222C6.60504 4 7.07003 4 8 4M9.6 6H14.4C14.9601 6 15.2401 6 15.454 5.89101C15.6422 5.79513 15.7951 5.64215 15.891 5.45399C16 5.24008 16 4.96005 16 4.4V3.6C16 3.03995 16 2.75992 15.891 2.54601C15.7951 2.35785 15.6422 2.20487 15.454 2.10899C15.2401 2 14.9601 2 14.4 2H9.6C9.03995 2 8.75992 2 8.54601 2.10899C8.35785 2.20487 8.20487 2.35785 8.10899 2.54601C8 2.75992 8 3.03995 8 3.6V4.4C8 4.96005 8 5.24008 8.10899 5.45399C8.20487 5.64215 8.35785 5.79513 8.54601 5.89101C8.75992 6 9.03995 6 9.6 6Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+         
 </div>
 
     </div>
-    <div class="card p-3 mb-3">
+  <h5 class="card-title">Overall Total Responses</h5>
+<p class="card-subtext">
+    Responses collected as of {{ \Carbon\Carbon::now()->format('F j, Y') }}
+</p>
 
-      
-<div class="d-flex gap-3">
- <div class="d-flex gap-5" style=" height:180px"> 
-          <!-- <h3 class="text-center">Survey Responses</h3> -->
-          
-          
-          
-<div>
-<img class="img_svg" src="{{asset('dropdown.svg')}}" alt="" style="width:200px;height:180px; ">
-<div class="svg-container" style=" 
-transform:translateX(90px);">  
 
-<div id="totalRowsCount" style="flex: 0 0 50%; 
-font-size: 16px;
- padding: 5px;  border:1px solid #ccc;
-  border-radius: 3px;  display: flex;
- box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-justify-content: space-between; align-items: center; 
-width:fit-content;
-transform:translateY(-60px);
-
-color: #495057;">
-
-    <span style="font-size: 18px; font-weight: bold;">Total Rows:</span>
-    <span id="rowCountValue" style="font-size: 18px; font-weight: 500; color: #007bff;">0</span>
   </div>
-</div></div>
-          
-          <form method="GET" action="{{ route('survey.responses') }}" class="filter-controls">
+</div>
+    <div class="dashboard-card" style="flex: 1 1 calc(20% - 20px);">
+  <div class="card-body" style="border: none;">
+    <div style="display: flex; align-items: center; justify-content: space-between;">
    
-   <div>
-          <div class="filter-group">
-        <label style="width: 80px; text-align:left" for="quarter">Quarter:</label>
-        <select name="quarter" id="quarter" class="select-control">
+        <h2 id="totalRowsCount" class="card-number text-primary">0</h2>
+      
+       
+     <div style="background-color: #2196F3; padding: 10px; border-radius: 50%;">
+  <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50 " fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2">
+    <line x1="4" y1="6" x2="20" y2="6" />
+    <line x1="4" y1="12" x2="20" y2="12" />
+    <line x1="4" y1="18" x2="20" y2="18" />
+  </svg>
+</div>
+
+    </div>
+  <h5 class="card-title">Total Rows</h5>
+
+    <p class="card-subtext  "  >Select to filter survey results</p>
+
+  </div>
+</div>
+
+<!-- Filter Form Dashboard Card -->
+<div class="dashboard-card" style="flex: 1 1 calc(30% - 20px);">
+  <div class="card-body" style="border: none;">
+<div class="d-flex justify-content-between align-items-center">
+<div>
+<h2 class="card-number text-primary mb-0">Filter</h2>
+    <p class="card-title " >Load the data selected</p>
+
+    <p class="card-subtext " >Select   to filter survey results</p>
+  </div>
+     <div style="background-color: #2196F3; padding: 10px; border-radius: 50%;">
+
+    <svg width="50" height="50" fill="#fff" viewBox="0 0 24 24">
+          <path d="M4 4h16v2l-6 7v5l-4 2v-7L4 6V4z"/>
+        </svg>
+  </div>
+</div>
+
+  
+<form method="GET" action="{{ route('survey.responses') }}" id="surveyForm" class="d-flex flex-wrap gap-3 align-items-center m-0">
+    <!-- Quarter -->
+    <div class="form-group d-flex align-items-center gap-2" style="min-width: 150px;">
+        <label for="quarter" class="stat-label mb-0">Quarter</label>
+        <select name="quarter" id="quarter" class="form-select form-select-sm">
             <option value="1" {{ $selectedQuarter == 1 ? 'selected' : '' }}>Q1</option>
             <option value="2" {{ $selectedQuarter == 2 ? 'selected' : '' }}>Q2</option>
             <option value="3" {{ $selectedQuarter == 3 ? 'selected' : '' }}>Q3</option>
@@ -89,155 +219,122 @@ color: #495057;">
         </select>
     </div>
 
-    <div class="filter-group">
-        <label style="width: 80px; text-align:left" for="year">Year:</label>
-        <select name="year" id="year" class="select-control">
+    <!-- Year -->
+    <div class="form-group d-flex align-items-center gap-2" style="min-width: 150px;">
+        <label for="year" class="stat-label mb-0">Year</label>
+        <select name="year" id="year" class="form-select form-select-sm ">
             @for ($y = 2024; $y <= now()->year; $y++)
                 <option value="{{ $y }}" {{ $selectedYear == $y ? 'selected' : '' }}>{{ $y }}</option>
             @endfor
         </select>
     </div>
+
+    <!-- Filter Button -->
+    <div>
+        <button type="submit" class="btn btn-primary btn-sm d-flex align-items-center gap-1">
+          
+            Get Data
+        </button>
     </div>
-    <div style= "margin-top:10px"> <button type="submit" class="data-btn">
-        <i class="fas fa-filter"></i> Filter
-    </button>
-</div>
+</form>
+
    
-</form> 
-</div>
-<!-- Filter Section -->
-<div class="row g-2" style=" width:80%;height:40%">
-      <!-- Sex Filter -->
-<div class="col-md-6 col-12">
-<div class="apple-select-wrapper position-relative">
+  </div>
+
+
   
-    <select id="sexFilter" class="select-control"
-        @if($total_responses == 0) disabled @endif >
+</div>
+
+
+
+            </div>
+
+
+
+
+
+<div class="text">More Selection</div>
+
+           <div class="card p-3 mt-2 mb-3">
+  <form class="row g-3 align-items-end">
+    <!-- Sex Filter -->
+    <div class="col-md-4">
+      <label for="sexFilter" class="form-label">Sex</label>
+      <select id="sexFilter" class="form-select" @if($total_responses == 0) disabled @endif>
         <option value="" selected>All Sex</option>
         <option value="Male">Male</option>
         <option value="Female">Female</option>
-    </select> 
+      </select>
     </div>
-</div>
-<!-- Age Range Filter -->
-<div class="col-md-3 col-6">
-    <input type="number" id="ageFrom" class="select-control2"
-        @if($total_responses == 0) disabled @endif
-        placeholder="Age From">
-</div>
-<div class="col-md-3 col-6">
-    <input type="number" id="ageTo" class="select-control2"
-        @if($total_responses == 0) disabled @endif
-        placeholder="Age To">
-</div>
+
+    <!-- Age Range Filter -->
+    <div class="col-md-2">
+      <label for="ageFrom" class="form-label">Age From</label>
+      <input type="number" id="ageFrom" class="form-control" placeholder="From" @if($total_responses == 0) disabled @endif>
+    </div>
+
+    <div class="col-md-2">
+      <label for="ageTo" class="form-label">Age To</label>
+      <input type="number" id="ageTo" class="form-control" placeholder="To" @if($total_responses == 0) disabled @endif>
+    </div>
+
     <!-- Customer Type Filter -->
-    <div class="col-md-6 col-12">
-    <div class="apple-select-wrapper position-relative">
-        <select id="customerTypeFilter" class="select-control"
-            @if($total_responses == 0) disabled @endif>
-            <option value="" selected>All Customer Types</option>
-            <option value="Citizen (general public, learners, parents, former DepEd employees, researchers, NGOs etc.)">Citizen (general public, learners, parents, former DepEd employees, researchers, NGOs etc.)</option>
-            <option value="Business (private school, corporations, etc.)">Business (private school, corporations, etc.)</option>
-            <option value="Government (current DepEd employees or employees of other government agencies & LGUs)">Government (current DepEd employees or employees of other government agencies & LGUs)</option>
-        </select>
-        
+    <div class="col-md-4">
+      <label for="customerTypeFilter" class="form-label">Customer Type</label>
+      <select id="customerTypeFilter" class="form-select" @if($total_responses == 0) disabled @endif>
+        <option value="" selected>All Customer Types</option>
+        <option value="Citizen (general public, learners, parents, former DepEd employees, researchers, NGOs etc.)">Citizen</option>
+        <option value="Business (private school, corporations, etc.)">Business</option>
+        <option value="Government (current DepEd employees or employees of other government agencies & LGUs)">Government</option>
+      </select>
     </div>
+
+    <!-- Main Office Filter -->
+    <div class="col-md-4">
+      <label for="mainOfficeFilter" class="form-label">Office</label>
+      <select id="mainOfficeFilter" class="form-select" @if($total_responses == 0) disabled @endif>
+        <option value="" selected>All Offices</option>
+        @foreach ($mainOffice as $mainOffices)
+          <option value="{{ $mainOffices->office_name }}">{{ $mainOffices->office_name }}</option>
+        @endforeach
+      </select>
+    </div>
+
+    <!-- Section Filter -->
+    <div class="col-md-4">
+      <label for="sectionFilter" class="form-label">Section</label>
+      <select id="sectionFilter" class="form-select" @if($total_responses == 0) disabled @endif>
+        <option value="" selected>All Sections</option>
+        @foreach ($subOffice as $subOffices)
+          <option value="{{ $subOffices->sub_office_name }}">{{ $subOffices->sub_office_name }}</option>
+        @endforeach
+      </select>
+    </div>
+
+    <!-- Service Filter -->
+    <div class="col-md-4">
+      <label for="serviceFilter" class="form-label">Service</label>
+      <select id="serviceFilter" class="form-select" @if($total_responses == 0) disabled @endif>
+        <option value="" selected>All Services</option>
+        @foreach ($service as $services)
+          <option value="{{ $services->service_name }}">{{ $services->service_name }}</option>
+        @endforeach
+      </select>
+    </div>
+
+    <!-- Search and Sort -->
+    <div class="col-md-8 d-flex gap-2">
+      <input type="text" id="searchInput" class="form-control" placeholder="Search responses..." @if($total_responses == 0) disabled @endif>
+      <button type="button" class="btn btn-outline-secondary" id="sortButton" title="Sort">
+        <i class="fas fa-sort"></i>
+      </button>
+    </div>
+  </form>
 </div>
-
-
-
-
-
-
-
-
 
 
 
 <style>
-</style>
-
-    <!-- Office Filter -->
-    <div class="col-md-6 col-12">
-    <div class="apple-select-wrapper position-relative">
-  
-        <select id="mainOfficeFilter" class="select-control" 
-          @if($total_responses == 0) disabled @endif>
-            <option value="" selected>All Offices</option>
-            @foreach ($mainOffice as $mainOffices)
-                <option value="{{ $mainOffices->office_name }}">{{ $mainOffices->office_name }}</option>
-            @endforeach
-        </select> 
-        </div>
-    </div>
-
-    <div class="col-md-6 col-12">
-    <div class="apple-select-wrapper position-relative">
-  
-        <select id="sectionFilter" class="select-control" 
-          @if($total_responses == 0) disabled @endif>
-            <option value="">All Sections</option>
-            @foreach ($subOffice as $subOffices)
-                <option value="{{ $subOffices->sub_office_name }}">{{ $subOffices->sub_office_name }}</option>
-            @endforeach
-        </select> 
-        </div>
-    </div>
-
-
-
-
-    <div class="col-md-6 col-12">
-    <div class="apple-select-wrapper position-relative">
-  
-        <select id="serviceFilter" class="select-control" 
-          @if($total_responses == 0) disabled @endif>
-            <option value="">All Service </option>
-            @foreach ($service as $services)
-                <option value="{{ $services->service_name }}">{{ $services->service_name }}</option>
-            @endforeach
-        </select> 
-        </div>
-    </div>
-<!--    
-<div style="display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; border:1px solid black">
-  
-
-  
-  <select id="officeDropdown" class="apple-select" style="flex: 0 0 23%; padding: 10px; font-size: 16px; border-radius: 8px; border: 1px solid #ced4da; background-color: #fff; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);">
-    <option value="">Select Office</option>
-    
-  </select>
-
-   
-  <select id="sectionDropdown" class="apple-select" style="flex: 0 0 23%; padding: 10px; font-size: 16px; border-radius: 8px; border: 1px solid #ced4da; background-color: #fff; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);" disabled>
-    <option value="">Select Section</option>
-     
-  </select> -->
-  <!-- <img src="{{asset('search.svg')}}" alt="" style="width:200px;height:200px"> -->
-  <!-- <div class="svg-container">
-<div id="totalRowsCount" style="flex: 0 0 50%; 
-font-size: 16px;
- padding: 5px;  border:1px solid #ccc;
-  border-radius: 3px;  display: flex;
- box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-justify-content: space-between; align-items: center; 
-width:fit-content;
-transform:translateX(-130px);
-color: #495057;">
-
-    <span style="font-size: 18px; font-weight: bold;">Total Rows:</span>
-    <span id="rowCountValue" style="font-size: 18px; font-weight: 500; color: #007bff;">0</span>
-  </div>
-</div> -->
-</div>
-
-</div>
-
-
-
-</div>
-</div><style>
  #loading-modal {
     position: fixed;
     top: 50%;
@@ -277,6 +374,10 @@ color: #495057;">
 }
 </style>
  
+
+
+<div class="text">Filtered Result  - Table</div>
+
                 <div class="card  " style="border-radius: 5px;">
                     
                     <div class="card-body" style="padding:0px;border-radius: 20px; ">

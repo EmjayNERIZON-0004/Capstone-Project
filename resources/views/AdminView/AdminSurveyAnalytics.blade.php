@@ -3,52 +3,30 @@
 @section('title', 'Manage Requests')
 
 @section('content')     
+<link rel="stylesheet" href="{{ asset('css/admin_dashboard.css') }}">
 <div class="wrapper">
 
 
-    <div class="content" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: larger;">
-    <div class="d-flex justify-content-between align-items-center mt-5" 
-    style="background-color: white; ">
-
-<div style="background-color:rgb(20, 160, 88); width:fit-content;height:60px;
-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-color:white;
-font-size:30px;
-text-align:left;
-padding:10px;
-padding-right:20px;
-transform:translateY(-20px);border-radius:5px;
-
-
-margin-left:10px;margin-right:10px"> 
-Survey Analytics
-
-</div>
+    <div class="content" >
+   
+   <?php
+        $month = date('n'); // Numeric representation of the month (1–12)
+        $year = date('Y'); // Current year
+        $quarter = ceil($month / 3); // Determine the quarter
+    ?>
+    
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h2 class="fw-bold">Survey Analytics Dashboard</h2>
+        <h4 class="text">Q<?= $quarter ?> <?= $year ?></h4>
     </div>
 
 
-    <div class="card-deck d-flex gap-4 mt-3 ">
- 
+    
 
 
 <style>
-  .filter-controls {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    background-color:rgb(247, 247, 247);
-    padding: 15px 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    margin-bottom: 25px;
-  }
   
-  .filter-group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
   
   label {
     font-weight: 600;
@@ -151,49 +129,125 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<!-- Total Responses Card -->
-<div class="card p-4 shadow-sm" style="flex: 1; background-color: #f8f9fc;">
-    <h5 class="text-muted">Total Responses</h5>
-    <h2 id="totalResponses" class="text-primary">0</h2>
+<style>
+    .dashboard-card{
+        max-height: 180px;
+       
+    }
+</style>
+
+  <div class="dashboard-container" style="  display: flex; flex-wrap: wrap;  justify-content: space-between;padding-bottom:10px">
+        
+     
+  <!-- Total Responses Card -->
+  <div class="dashboard-card " style="flex: 1 1 calc(20% - 20px);">
+    <div class="card-body" style="border: none;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+      
+          <h2 id="totalResponses" class="card-number text-primary">0</h2>
+          
+          <div style="background-color: #2196F3; padding: 10px; border-radius: 50%;">
+            <svg width="50" height="50" fill="#fff" viewBox="0 0 24 24">
+    <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 
+             2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5C15 14.17 
+             10.33 13 8 13zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 
+             3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+  </svg>
 </div>
 
-<!-- Quarter & Year Card -->
-<div class="card p-4 shadow-sm" style="flex: 1; background-color: #f8f9fc;">
-    <h5 class="text-muted">Quarter & Year</h5>
-    <h2 id="quarterYear" class="text-success">Q1 2025</h2>
 </div>
-
-
-<div class="card p-4 shadow-sm" style="flex: 1; background-color: #f8f9fc;">
-<div class="d-flex gap-1">
-<div class="gap-1">
-  <div class="filter-group">
-    <label style="width:80px;text-align:right" for="quarterDropdown">Quarter:</label>
-    <select id="quarterDropdown" class="select-control">
-      <option value="1">Q1</option>
-      <option value="2">Q2</option>
-      <option value="3">Q3</option>
-      <option value="4">Q4</option>
-    </select>
-  </div>
-  
-  <div class="filter-group mt-2">
-    <label style="width:80px;text-align:right" for="yearDropdown">Year:</label>
-    <select id="yearDropdown" class="select-control">
-      <option value="2024">2024</option>
-      <option value="2025">2025</option>
-      <option value="2026">2026</option>
-    </select>
-  </div>
+<h5 class="card-title">Total Responses</h5>
+      <p class="card-subtext">Survey forms submitted</p>
+      
+    </div>
   </div>
 
-  <div style="padding:3px">
-  <button onclick="getQuarterData()" class="data-btn">
-     Get Data
-  </button></div>
-  </div> 
+  <!-- Quarter & Year Card -->
+  <div class="dashboard-card  " style="flex: 1 1 calc(20% - 20px);">
+    <div class="card-body" style="border: none;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+       
+          <h2 id="quarterYear" class="card-number text-success">Q1 2025</h2>
+         
+        
+        <div style="background-color: #4CAF50; padding: 10px; border-radius: 50%;">
+          <svg width="50" height="50" fill="#fff" viewBox="0 0 24 24">
+            <path d="M3 4h18v2H3V4zm0 4h18v12H3V8zm2 2v8h14v-8H5z"/>
+          </svg>
+        </div>
+      </div>
+       <h5 class="card-title">Selected Period</h5>
+      <p class="card-subtext">From selected filter</p>
+    </div>
+  </div>
+
+  <!-- Quarter & Year Dropdown Card -->
+<div class="dashboard-card" style="flex: 1 1 calc(30% - 20px);">
+  <div class="card-body" style="border: none;">
+    <div style="display: flex; align-items: flex-start; justify-content: space-between;">
+
+      <!-- Left: Dropdowns + Button -->
+      <div>
+        <div class="filter-group mb-2">
+          <label for="quarterDropdown" style="width: 80px; display: inline-block;">Quarter:</label>
+          <select id="quarterDropdown" class="select-control" style="width: 250px;">
+            <option value="1">Q1</option>
+            <option value="2">Q2</option>
+            <option value="3">Q3</option>
+            <option value="4">Q4</option>
+          </select>
+        </div>
+
+        <div class="filter-group mb-2">
+          <label for="yearDropdown" style="width: 80px; display: inline-block;">Year:</label>
+          <select id="yearDropdown" class="select-control" style="width: 250px;">
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+            <option value="2026">2026</option>
+          </select>
+        </div>
+          <label for="yearDropdown" style="width: 80px; display: inline-block;"> </label>
+
+        <button onclick="getQuarterData()" class="btn btn-primary" style="width: 250px;">Get Data</button>
+      </div>
+
+      <!-- Right: Icon -->
+      <div style="background-color: #FF9800; padding: 10px; border-radius: 50%;">
+        <svg width="50" height="50" fill="#fff" viewBox="0 0 24 24">
+          <path d="M4 4h16v2l-6 7v5l-4 2v-7L4 6V4z"/>
+        </svg>
+      </div>
+
+    </div>
+    
+  </div>
 </div>
+
+
+  <!-- About this Page Card -->
+  <div class="dashboard-card mb-3" style="flex: 1 1 calc(100% - 20px);">
+    <div class="card-body d-flex justify-content-between" style="border: none;">
+      <div>
+        <h6 class="mb-2"><strong>About this page</strong></h6>
+        <p class="mb-2 text-muted" style="max-width: 90%;">
+          This dashboard presents analytics based on the <strong>survey data collected</strong> through forms. It highlights satisfaction rates, response counts, and breakdowns by quarter, year, and section performance.
+        </p>
+      </div>
+     
+  <div style="width: 50px; height: 50px;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#1976D2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      style="width: 100%; height: 100%;" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="16" x2="12" y2="12"></line>
+      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+    </svg>
+  </div>
+    </div>
+  </div>
+
 </div>
+
+ 
 
 
 
@@ -259,7 +313,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 <!-- This container will hold your charts and data, initially hidden if no data is available -->
- 
+ <div class="text">Result</div>
 <div id="dataContainer">
         <!-- Gender Section -->
         <div class="card p-4 mt-3">

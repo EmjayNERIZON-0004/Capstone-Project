@@ -11,7 +11,7 @@
     <div class="card-header text-white  " style="background-color: #2c2c2c;">
     <h3>Adding Sub Office to <b> {{ $mainOffice->office_name }}</b></h3>
     </div>
-    
+     
     <div class="card-body">
     <form action="{{ route('subOffice.store') }}" method="POST">
         @csrf

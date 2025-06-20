@@ -3,89 +3,113 @@
 @section('title', 'Manage Requests')
 
 @section('content')     
+<link rel="stylesheet" href="{{ asset('css/admin_dashboard.css') }}">
+
 <div class="wrapper">
     <div class="content">
-
-
 
 
 <!-- Request Dashboard Cards -->
 <div class="container mt-4">
 <div class="container mt-4">
-  <div class="row">
-    <!-- Total Requests Card -->
-    <div class="col-md-3 mb-4">
-      <div class="card shadow-sm h-100">
-        <div class="card-body text-center">
-          <div class="d-flex justify-content-center mb-2">
-            <div class="rounded-circle bg-primary bg-opacity-10 p-3">
-              <i class="fas fa-clipboard-list text-primary" style="font-size: 24px;"></i>
-            </div>
-          </div>
-          <h3 class="fw-bold" id="totalRequestsCount">{{ $totalCount }}</h3>
-          <h6 class="text-muted">Total Requests</h6>
-          <div class="progress mt-3" style="height: 5px;">
-            <div class="progress-bar bg-primary" style="width: 100%"></div>
-          </div>
+  
+   <?php
+        $month = date('n'); // Numeric representation of the month (1–12)
+        $year = date('Y'); // Current year
+        $quarter = ceil($month / 3); // Determine the quarter
+    ?>
+    <div id="customAlertContainer"   ></div>
+
+
+
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h2 class="fw-bold">Requests Dashboard</h2>
+        <h4 class="text">Q<?= $quarter ?> <?= $year ?></h4>
+    </div>
+ <div class="dashboard-container" style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 20px;">
+
+  <!-- Total Requests -->
+  <div class="dashboard-card" style="flex: 1 1 calc(25% - 20px);">
+    <div class="card-body" style="border: none;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+         
+          <h2 class="card-number text-dark" id="totalRequestsCount">{{ $totalCount }}</h2>
+      
+        <div class="bg-primary" style="  padding: 10px; border-radius: 50%;">
+          <img src="{{ asset('clipboard.svg') }}" style="width: 40px; height: 40px;">
         </div>
       </div>
-    </div>
-    
-    <!-- Pending Requests Card -->
-    <div class="col-md-3 mb-4">
-      <div class="card shadow-sm h-100">
-        <div class="card-body text-center">
-          <div class="d-flex justify-content-center mb-2">
-            <div class="rounded-circle bg-warning bg-opacity-10 p-3">
-              <i class="fas fa-clock text-warning" style="font-size: 24px;"></i>
-            </div>
-          </div>
-          <h3 class="fw-bold" id="pendingRequestsCount">{{ $pendingCount }}</h3>
-          <h6 class="text-muted">Pending Requests</h6>
-          <div class="progress mt-3" style="height: 5px;">
-            <div class="progress-bar bg-warning" style="width: <?= $totalCount > 0 ? ($pendingCount / $totalCount * 100) : 0 ?>%"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Approved Requests Card -->
-    <div class="col-md-3 mb-4">
-      <div class="card shadow-sm h-100">
-        <div class="card-body text-center">
-          <div class="d-flex justify-content-center mb-2">
-            <div class="rounded-circle bg-success bg-opacity-10 p-3">
-              <i class="fas fa-check-circle text-success" style="font-size: 24px;"></i>
-            </div>
-          </div>
-          <h3 class="fw-bold" id="approvedRequestsCount">{{ $approvedCount }}</h3>
-          <h6 class="text-muted">Approved Requests</h6>
-          <div class="progress mt-3" style="height: 5px;">
-            <div class="progress-bar bg-success" style="width: <?= $totalCount > 0 ? ($approvedCount / $totalCount * 100) : 0 ?>%"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Rejected Requests Card -->
-    <div class="col-md-3 mb-4">
-      <div class="card shadow-sm h-100">
-        <div class="card-body text-center">
-          <div class="d-flex justify-content-center mb-2">
-            <div class="rounded-circle bg-danger bg-opacity-10 p-3">
-              <i class="fas fa-times-circle text-danger" style="font-size: 24px;"></i>
-            </div>
-          </div>
-          <h3 class="fw-bold" id="rejectedRequestsCount">{{ $rejectedCount }}</h3>
-          <h6 class="text-muted">Rejected Requests</h6>
-          <div class="progress mt-3" style="height: 5px;">
-            <div class="progress-bar bg-danger" style="width: <?= $totalCount > 0 ? ($rejectedCount / $totalCount * 100) : 0 ?>%"></div>
-          </div>
-        </div>
+          <h5 class="card-title">Total Requests</h5>
+      <p class="card-subtext">All kinds of request. </p>
+
+      <div class="progress mt-3" style="height: 5px;">
+        <div class="progress-bar bg-primary" style="width: 100%"></div>
       </div>
     </div>
   </div>
-  
+
+  <!-- Pending Requests -->
+  <div class="dashboard-card" style="flex: 1 1 calc(25% - 20px);">
+    <div class="card-body" style="border: none;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+       
+          <h2 class="card-number text-dark" id="pendingRequestsCount">{{ $pendingCount }}</h2>
+     
+        <div style="background-color: rgb(255, 157, 0); padding: 10px; border-radius: 50%;">
+          <img src="{{ asset('clock.svg') }}" style="width: 40px; height: 40px;">
+        </div>
+      </div>
+          <h5 class="card-title">Pending Requests</h5>
+      <p class="card-subtext">Waiting to view... </p>
+
+      <div class="progress mt-3" style="height: 5px;">
+        <div class="progress-bar bg-warning" style="width: <?= $totalCount > 0 ? ($pendingCount / $totalCount * 100) : 0 ?>%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Approved Requests -->
+  <div class="dashboard-card" style="flex: 1 1 calc(25% - 20px);">
+    <div class="card-body" style="border: none;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        
+          <h2 class="card-number text-dark" id="approvedRequestsCount">{{ $approvedCount }}</h2>
+        
+        <div style="background-color: #4CAF50; padding: 10px; border-radius: 50%;">
+          <img src="{{ asset('check3.svg') }}" style="width: 40px; height: 40px;">
+        </div>
+      </div>
+          <h5 class="card-title">Approved Requests</h5>
+      <p class="card-subtext">Accepted </p>
+
+      <div class="progress mt-3" style="height: 5px;">
+        <div class="progress-bar bg-success" style="width: <?= $totalCount > 0 ? ($approvedCount / $totalCount * 100) : 0 ?>%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rejected Requests -->
+  <div class="dashboard-card" style="flex: 1 1 calc(25% - 20px);">
+    <div class="card-body" style="border: none;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        
+          <h2 class="card-number text-dark" id="rejectedRequestsCount">{{ $rejectedCount }}</h2>
+        
+        <div style="background-color: #e53935; padding: 10px; border-radius: 50%;">
+          <img src="{{ asset('cross2.svg') }}" style="width: 40px; height: 40px;">
+        </div>
+      </div>
+          <h5 class="card-title">Rejected Requests</h5>
+      <p class="card-subtext">Office request's rejected.</p>
+
+      <div class="progress mt-3" style="height: 5px;">
+        <div class="progress-bar bg-danger" style="width: <?= $totalCount > 0 ? ($rejectedCount / $totalCount * 100) : 0 ?>%"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
   <!-- Request Dashboard Cards -->
 <div class="container mt-4">
  
@@ -98,9 +122,18 @@
     <!-- NEW: Requests by Office -->
     <div class="col-md-6 mb-4">
       <div class="card shadow-sm">
-        <div class="card-header bg-white border-0">
-          <h6 class="fw-bold mb-0"><i class="fas fa-building text-secondary me-2"></i>Requests by Office</h6>
-        </div>
+     <div class="card-header bg-white border-0">
+  <h5 class="fw-bold mb-0 d-flex align-items-center "
+  style="
+    font-family:Verdana, Geneva, Tahoma, sans-serif">
+    
+    Requests by Office
+  </h5>
+</div>
+
+
+
+
         <div class="card-body p-0">
           <ul class="list-group list-group-flush" id="officeRequestsList">
             @if(count($officeRequests) > 0)
@@ -108,13 +141,18 @@
                 <li class="list-group-item border-0 py-3">
                   <div class="d-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center">
-                      <div class="rounded-circle bg-primary bg-opacity-10 p-2 me-3" style="height: 40px; width: 40px;">
-                        <i class="fas fa-building text-primary" style="font-size: 18px;"></i>
-                      </div>
+                      <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-2" 
+    
+    style="width: 40px; height: 40px; 
+    ">
+      <img src="{{ asset('office-building.svg') }}" alt="Building Icon" style="width: 25px; height: 25px;">
+    </div>
                       <span class="fw-semibold">{{ $office->main_office_id }}</span>
                     </div>
                     <div>
-                      <span class="badge bg-primary rounded-pill">{{ $office->request_count }} Requests</span>
+                      <span class="badge bg-primary rounded-pill "
+                      style="font-size: 16px;"
+                      >{{ $office->request_count }} Requests</span>
                     </div>
                   </div>
                   <div class="progress mt-2" style="height: 5px;">
@@ -135,7 +173,16 @@
 <div class="col-md-6 mb-4">
     <div class="card shadow-sm">
     <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
-        <h6 class="fw-bold mb-0"><i class="fas fa-history text-secondary me-2"></i>Recent Activity</h6>
+        <h5 class="fw-bold mb-0 d-flex align-items-center "
+  style="
+    font-family:Verdana, Geneva, Tahoma, sans-serif">
+     
+    Recent Activities
+  </h5>
+      
+      
+      
+      
         <button id="refresh-activity" class="btn btn-sm btn-light" title="Refresh activities">
             <i class="fas fa-sync-alt"></i>
         </button>
@@ -234,8 +281,11 @@ document.addEventListener("DOMContentLoaded", function () {
             <li class="list-group-item border-0 py-3">
                 <div class="d-flex align-items-start">
                     <div class="me-3">
-                        <i class="fas fa-${activity.icon.class} text-${activity.icon.color} fs-4"></i>
-                    </div>
+  <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
+    <img src="{{ asset('clock.svg') }}" alt="Clock Icon" style="width: 30px; height: 30px;">
+  </div>
+</div>
+
                     <div>
                         <div class="fw-bold">${activity.title}</div>
                         <div class="text-muted small">${activity.description}</div>
@@ -477,33 +527,71 @@ Requests Approval
         </div>
     </div>
 </div>
-<div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
 
-            <div class="modal-body text-center p-2">
-                <!-- Success Icon -->
-                <div class="mb-3 pt-3">
-                    <i class="fas fa-check fa-3x text-success"  ></i>
-                </div>
 
-                <!-- Title -->
-                <h5 class="fw-bold mb-3">Request Action Completed</h5>
 
-                <!-- Message -->
-                <p id="modalMessage" class="text-muted mb-4">
-                    The request has been successfully approved.
-                </p>
+ 
+  <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+
+              <div class="modal-body text-center p-2">
+                  <!-- Success Icon -->
+                  <div class="mb-3 pt-3">
+                      <i class="fas fa-check fa-3x text-success"  ></i>
+                  </div>
+
+                  <!-- Title -->
+                  <h5 class="fw-bold mb-3">Request Action Completed</h5>
+
+                  <!-- Message -->
+                  <p id="modalMessage" class="text-muted mb-4">
+                      The request has been successfully approved.
+                  </p>
+              </div>
+
+              <!-- Close Button (X) -->
+              <button type="button" class="btn-close position-absolute top-0 end-0 m-2" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+      </div>
+  </div>
+
+
+<script>function showAlert(type, message) {
+    const colorMap = {
+        success: '#28a745',
+        warning: '#fd7e14',
+        error: '#dc3545',
+        info: '#007bff'
+    };
+
+    const iconMap = {
+        success: '✓',
+        warning: '!',
+        error: '×',
+        info: 'i'
+    };
+
+    const alertHtml = `
+        <div class="alert d-flex align-items-center p-3 mb-3 shadow-sm"
+             style="border-left: 6px solid ${colorMap[type]}; background-color: #fff; border-radius: 6px;">
+            <div class="me-3 d-flex align-items-center justify-content-center"
+                 style="width: 32px; height: 32px; background-color: ${colorMap[type]}; border-radius: 50%; color: #fff; font-weight: bold;">
+                ${iconMap[type]}
             </div>
-
-            <!-- Close Button (X) -->
-            <button type="button" class="btn-close position-absolute top-0 end-0 m-2" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div>
+                <strong class="d-block" style="color: ${colorMap[type]}">${type.charAt(0).toUpperCase() + type.slice(1)}</strong>
+                <span class="text-muted">${message}</span>
+            </div>
         </div>
-    </div>
-</div>
+    `;
 
+    const container = document.getElementById('customAlertContainer');
+    container.innerHTML = alertHtml;
 
-<script>
+    setTimeout(() => container.innerHTML = '', 3000);
+}
+
 // Update Request Status
 function updateRequest(requestId, status) {
     if (!confirm("Are you sure you want to " + status + " this request?")) return;
@@ -525,13 +613,10 @@ function updateRequest(requestId, status) {
 
             // Show success modal
             document.getElementById('modalMessage').innerHTML = `Request has been <strong>${status}</strong>!`;
-            var successModal = new bootstrap.Modal(document.getElementById('successModal'));
-            successModal.show();
-
+           showAlert('success', `Request has been <strong>${status}</strong>!`);
+ setTimeout(() => location.reload(), 2000);
             // Refresh the page after the success modal is closed
-            document.getElementById('successModal').addEventListener('hidden.bs.modal', function () {
-                location.reload();
-            });
+           
         } else {
             alert("Something went wrong. Please try again.");
         }

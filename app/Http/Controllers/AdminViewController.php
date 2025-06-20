@@ -18,6 +18,456 @@ class AdminViewController extends Controller
 {
 
 
+    public function valid_survey(){
+ 
+$currentYear = Carbon::now()->year;
+
+$valid = survey_responses::where('service_availed', '!=', 'Other requests/inquiries')
+    ->whereYear('created_at', $currentYear)
+    ->count();
+
+$total = survey_responses::whereYear('created_at', $currentYear)->count();
+
+$valid_responses_list = survey_responses::where('service_availed', '!=', 'Other requests/inquiries')
+    ->whereYear('created_at', $currentYear)
+    ->get();
+
+$responses = survey_responses::whereYear('created_at', $currentYear)->get();
+
+$others_count = survey_responses::where('service_availed', '=', 'Other requests/inquiries')
+    ->whereYear('created_at', $currentYear)
+    ->count();
+        return view('AdminView.AdminValidSurvey',compact('currentYear','others_count','valid','total','valid_responses_list','responses'));
+    }
+
+public function get_valid_survey(int $quarter, int $year)
+{
+    $quarters = [
+        1 => ['start' => 1, 'end' => 3],
+        2 => ['start' => 4, 'end' => 6],
+        3 => ['start' => 7, 'end' => 9],
+        4 => ['start' => 10, 'end' => 12],
+    ];
+
+    $startOfQuarter = \Carbon\Carbon::create($year, $quarters[$quarter]['start'], 1)->startOfMonth();
+    $endOfQuarter = \Carbon\Carbon::create($year, $quarters[$quarter]['end'], 1)->endOfMonth();
+
+    $valid = survey_responses::where('service_availed', '!=', 'Other requests/inquiries')
+        ->whereBetween('created_at', [$startOfQuarter, $endOfQuarter])
+        ->get();
+
+    $others = survey_responses::where('service_availed', '=', 'Other requests/inquiries')
+        ->whereBetween('created_at', [$startOfQuarter, $endOfQuarter])
+        ->get();
+
+    $all = survey_responses::whereBetween('created_at', [$startOfQuarter, $endOfQuarter])
+        ->get();
+
+    $validCount = $valid->count();
+    $totalCount = $all->count();
+
+    $validPercentage = $totalCount > 0
+        ? round(($validCount / $totalCount) * 100, 2)
+        : 0;
+
+    return response()->json([
+        // 'valid' => $valid,
+        // 'others' => $others,
+        // 'all' => $all,
+        'valid_count' => $validCount,
+        'total_count' => $totalCount,
+        'valid_percentage' => $validPercentage,
+    ]);
+}
+ 
+public function get_response_counts($year, $mode)
+{
+    $query = survey_responses::select('created_at');
+
+    $results = [];
+
+    switch ($mode) {
+        case 'weekly':
+            // Group by week number
+            $results = $query
+                ->whereYear('created_at', $year)
+                ->get()
+                ->groupBy(function ($item) {
+                    return 'Week ' . Carbon::parse($item->created_at)->weekOfYear;
+                })
+                ->map(function ($group) {
+                    return $group->count();
+                });
+            break;
+
+        case 'monthly':
+            $results = $query
+                ->whereYear('created_at', $year)
+                ->get()
+                ->groupBy(function ($item) {
+                    return Carbon::parse($item->created_at)->format('F'); // e.g., January
+                })
+                ->map(function ($group) {
+                    return $group->count();
+                });
+            break;
+
+        case 'quarterly':
+            $results = $query
+                ->whereYear('created_at', $year)
+                ->get()
+                ->groupBy(function ($item) {
+                    $q = ceil(Carbon::parse($item->created_at)->month / 3);
+                    return 'Q' . $q;
+                })
+                ->map(function ($group) {
+                    return $group->count();
+                });
+            break;
+
+        case 'yearly':
+            $results = $query
+                ->get()
+                ->groupBy(function ($item) {
+                    return Carbon::parse($item->created_at)->year;
+                })
+                ->map(function ($group) {
+                    return $group->count();
+                });
+            break;
+
+        default:
+            return response()->json(['error' => 'Invalid mode. Use weekly, monthly, quarterly, or yearly.'], 400);
+    }
+
+    // Format as array of { label, count }
+    $formatted = $results->map(function ($count, $label) {
+        return ['label' => $label, 'count' => $count];
+    })->values(); // reindex keys
+
+    return response()->json($formatted);
+}
+
+public function get_valid_survey_analytics($year, $mode = 'quarterly')
+{
+    $results = [];
+
+    if ($mode === 'monthly') {
+        // 🗓 Loop through all 12 months
+        for ($month = 1; $month <= 12; $month++) {
+            $start = \Carbon\Carbon::create($year, $month, 1)->startOfMonth();
+            $end = \Carbon\Carbon::create($year, $month, 1)->endOfMonth();
+
+            $validCount = survey_responses::where('service_availed', '!=', 'Other requests/inquiries')
+                ->whereBetween('created_at', [$start, $end])
+                ->count();
+
+            $totalCount = survey_responses::whereBetween('created_at', [$start, $end])->count();
+
+            $percentage = $totalCount > 0 ? round(($validCount / $totalCount) * 100, 2) : 0;
+
+            $results[] = [
+                'label' => \Carbon\Carbon::create()->month($month)->format('F'), // e.g., January
+                'valid' => $validCount,
+                'total' => $totalCount,
+                'percentage' => $percentage
+            ];
+        }
+    } else {
+        // 📊 Quarterly logic
+        $quarters = [
+            1 => ['start' => 1, 'end' => 3],
+            2 => ['start' => 4, 'end' => 6],
+            3 => ['start' => 7, 'end' => 9],
+            4 => ['start' => 10, 'end' => 12],
+        ];
+
+        foreach ($quarters as $q => $range) {
+            $start = \Carbon\Carbon::create($year, $range['start'], 1)->startOfMonth();
+            $end = \Carbon\Carbon::create($year, $range['end'], 1)->endOfMonth();
+
+            $validCount = survey_responses::where('service_availed', '!=', 'Other requests/inquiries')
+                ->whereBetween('created_at', [$start, $end])
+                ->count();
+
+            $totalCount = survey_responses::whereBetween('created_at', [$start, $end])->count();
+
+            $percentage = $totalCount > 0 ? round(($validCount / $totalCount) * 100, 2) : 0;
+
+            $results[] = [
+                'label' => 'Q' . $q,
+                'valid' => $validCount,
+                'total' => $totalCount,
+                'percentage' => $percentage
+            ];
+        }
+    }
+
+    return response()->json($results);
+}
+
+
+public function service_weighted_average(String $service_type)
+{
+    // Get service names that match the service_type logic
+    $serviceNames = DB::table('services')
+        ->when($service_type === 'external', function ($q) {
+            $q->whereIn('services_type', ['external', 'both']);
+        })
+        ->when($service_type === 'internal', function ($q) {
+            $q->where('services_type', 'internal');
+        })
+        ->pluck('service_name');
+
+    // Fetch survey responses where service_availed matches the allowed service names
+    $responses = DB::table('survey_responses')
+        ->whereIn('service_availed', $serviceNames)
+        ->select(['sqd1', 'sqd2', 'sqd3', 'sqd4', 'sqd5', 'sqd6', 'sqd7', 'sqd8'])
+        ->get();
+ 
+    // Initialize dimension arrays for weighted average calculation
+    $dimensions = [
+        'Responsiveness' => ['sqd1'], // Adjust these mappings based on your actual SQD questions
+        'Reliability' => ['sqd2'], 
+        'Access_Facilities' => ['sqd3'],
+        'Communication' => ['sqd4'],
+        'Costs' => ['sqd5'],
+        'Integrity' => ['sqd6'],
+        'Assurance' => ['sqd7'],
+        'Outcome' => ['sqd8']
+    ];
+
+    $dimensionScores = [];
+    $totalRespondents = count($responses);
+    
+    // Calculate weighted average for each dimension
+    foreach ($dimensions as $dimensionName => $sqdColumns) {
+        $totalWeightedSum = 0;
+        $totalWeight = 0;
+        $validResponses = 0;
+        
+        foreach ($responses as $response) {
+            $respondentSum = 0;
+            $respondentCount = 0;
+            
+            // Calculate average for this respondent across the SQD columns for this dimension
+            foreach ($sqdColumns as $column) {
+                $score = $response->{$column};
+                
+                if ($score !== null && $score !== '' && strtoupper($score) !== 'N/A') {
+                    $intScore = (int) $score;
+                    if ($intScore >= 1 && $intScore <= 5) {
+                        $respondentSum += $intScore;
+                        $respondentCount++;
+                    }
+                }
+            }
+            
+            // If respondent has valid scores for this dimension
+            if ($respondentCount > 0) {
+                $respondentAverage = $respondentSum / $respondentCount;
+                $totalWeightedSum += $respondentAverage;
+                $totalWeight++;
+                $validResponses++;
+            }
+        }
+        
+        // Calculate weighted average for this dimension
+        $dimensionAverage = $totalWeight > 0 ? round($totalWeightedSum / $totalWeight, 2) : 0;
+        
+        $dimensionScores[$dimensionName] = [
+            'average' => $dimensionAverage,
+            'valid_responses' => $validResponses
+        ];
+    }
+
+    // Calculate overall weighted average across all dimensions
+    $overallSum = 0;
+    $dimensionCount = 0;
+    
+    foreach ($dimensionScores as $dimension) {
+        if ($dimension['valid_responses'] > 0) {
+            $overallSum += $dimension['average'];
+            $dimensionCount++;
+        }
+    }
+    
+    $overallAverage = $dimensionCount > 0 ? round($overallSum / $dimensionCount, 2) : 0;
+    
+    // Determine rating based on overall average
+    $rating = 'U'; // Unsatisfactory
+    if ($overallAverage >= 4.5) {
+        $rating = 'VS'; // Very Satisfactory
+    } elseif ($overallAverage >= 3.5) {
+        $rating = 'S'; // Satisfactory
+    }
+
+    // Also calculate the original satisfaction counts for compatibility
+    $scores = [];
+    foreach ($responses as $response) {
+        foreach (range(1, 8) as $i) {
+            $val = $response->{'sqd' . $i};
+            $scores[] = $val;
+        }
+    }
+
+    $count = [
+        'Strongly Agree' => 0,
+        'Agree' => 0,
+        'Neither Agree nor Disagree' => 0,
+        'Disagree' => 0,
+        'Strongly Disagree' => 0,
+        'NA' => 0,
+    ];
+
+    $total = 0;
+    $valid_scores = [];
+    $ratingLabels = [
+        5 => 'Strongly Agree',
+        4 => 'Agree',
+        3 => 'Neither Agree nor Disagree',
+        2 => 'Disagree',
+        1 => 'Strongly Disagree',
+    ];
+
+    foreach ($scores as $score) {
+        $total++;
+
+        if ($score === null || $score === '') {
+            continue;
+        } elseif (strtoupper($score) === 'N/A') {
+            $count['NA']++;
+        } else {
+            $intScore = (int) $score;
+            if (isset($ratingLabels[$intScore])) {
+                $label = $ratingLabels[$intScore];
+                $count[$label]++;
+                $valid_scores[] = $intScore;
+            }
+        }
+    }
+
+    $valid_count = count($valid_scores);
+    $average = $valid_count ? round(array_sum($valid_scores) / $valid_count, 2) : 0;
+    $percent_score = $valid_count
+        ? round((($count['Strongly Agree'] + $count['Agree']) / $valid_count) * 100, 2)
+        : 0;
+
+    return response()->json([
+      
+        // New weighted average data for Customer Rating table
+        'weighted_averages' => [
+            'Responsiveness' => $dimensionScores['Responsiveness']['average'],
+            'Reliability' => $dimensionScores['Reliability']['average'],
+            'Access_Facilities' => $dimensionScores['Access_Facilities']['average'],
+            'Communication' => $dimensionScores['Communication']['average'],
+            'Costs' => $dimensionScores['Costs']['average'],
+            'Integrity' => $dimensionScores['Integrity']['average'],
+            'Assurance' => $dimensionScores['Assurance']['average'],
+            'Outcome' => $dimensionScores['Outcome']['average'],
+            'Overall_Score' => $overallAverage,
+            'Rating' => $rating,
+            'Total_Respondents' => $totalRespondents
+        ]
+    ]);
+}
+  
+
+public function service_overall_satisfaction(String $service_type)
+{
+    // Get IDs of services with the given type (include 'both' for 'external')
+// Get service names (not IDs!) that match the service_type logic
+$serviceNames = DB::table('services')
+    ->when($service_type === 'external', function ($q) {
+        $q->whereIn('services_type', ['external', 'both']);
+    })
+    ->when($service_type === 'internal', function ($q) {
+        $q->where('services_type', 'internal');
+    })
+    ->pluck('service_name'); // this is what matches survey_responses.service_availed
+ 
+// Fetch survey responses where service_availed matches the allowed service names
+$responses = DB::table('survey_responses')
+    ->whereIn('service_availed', $serviceNames)
+    ->select(['sqd1','sqd2','sqd3','sqd4','sqd5','sqd6','sqd7','sqd8'])
+    ->get();
+ 
+    // Flatten scores
+    $scores = [];
+    foreach ($responses as $response) {
+        foreach (range(1, 8) as $i) {
+            $val = $response->{'sqd' . $i};
+            $scores[] = $val;
+        }
+    }
+
+ 
+// Count score categories
+$count = [
+    'Strongly Agree' => 0,
+    'Agree' => 0,
+    'Neither Agree nor Disagree' => 0,
+    'Disagree' => 0,
+    'Strongly Disagree' => 0,
+    'NA' => 0,
+];
+$total = 0;
+$valid_scores = [];
+$ratingLabels = [
+    5 => 'Strongly Agree',
+    4 => 'Agree',
+    3 => 'Neither Agree nor Disagree',
+    2 => 'Disagree',
+    1 => 'Strongly Disagree',
+];
+
+foreach ($scores as $score) {
+    $total++;
+    
+    if ($score === null || $score === '') {
+        continue; // skip blank
+    } elseif (strtoupper($score) === 'N/A') {
+        $count['NA']++;
+    } else {
+        $intScore = (int) $score;
+        
+        if (isset($ratingLabels[$intScore])) {
+            $label = $ratingLabels[$intScore];
+            $count[$label]++;
+            $valid_scores[] = $intScore;
+        }
+    }
+    
+}
+ 
+
+$valid_count = count($valid_scores);
+$average = $valid_count ? round(array_sum($valid_scores) / $valid_count, 2) : 0;
+
+$percent_score = $valid_count
+    ? round((($count['Strongly Agree'] + $count['Agree']) / $valid_count) * 100, 2)
+    : 0;
+
+return response()->json([
+    'Strongly Agree' => $count['Strongly Agree'],
+    'Agree' => $count['Agree'],
+    'Neither Agree nor Disagree' => $count['Neither Agree nor Disagree'],
+    'Disagree' => $count['Disagree'],
+    'Strongly Disagree' => $count['Strongly Disagree'],
+    'NA' => $count['NA'],
+    'Total Responses' => $total,
+    'Overall (Ave.)' => $average,
+    'Overall (Per.)' => $percent_score . '%',
+]);
+
+}
+
+
+
+
+
+
+
     public function logs()
     {
         // Get the log file path
@@ -60,8 +510,6 @@ class AdminViewController extends Controller
 public function getHistoricalPositive()
 {
     try {
-        // Get data from the past 6 months
-        $sixMonthsAgo = Carbon::now()->subMonths(5)->startOfMonth(); // Include current month
         
         // Fetch positive feedback counts grouped by month
         $positiveFeedbackCounts = DB::table('survey_responses')  // Use your actual table name
@@ -70,7 +518,7 @@ public function getHistoricalPositive()
                 DB::raw('MONTH(created_at) as month'),
                 DB::raw('COUNT(*) as count')
             )
-            ->where('created_at', '>=', $sixMonthsAgo)
+           ->whereBetween('created_at', [Carbon::now()->startOfYear(), Carbon::now()])
             ->where(function($query) {
                 // Adjust this condition based on how you determine positive sentiment
                 // Option 1: If you have a sentiment column
@@ -103,8 +551,8 @@ public function getHistoricalNegative()
 {
     try {
         // Get data from the past 6 months
-        $sixMonthsAgo = Carbon::now()->subMonths(5)->startOfMonth(); // Include current month
-        
+ 
+ 
         // Fetch negative feedback counts grouped by month
         $negativeFeedbackCounts = DB::table('survey_responses')  // Use your actual table name
             ->select(
@@ -112,7 +560,8 @@ public function getHistoricalNegative()
                 DB::raw('MONTH(created_at) as month'),
                 DB::raw('COUNT(*) as count')
             )
-            ->where('created_at', '>=', $sixMonthsAgo)
+         ->whereBetween('created_at', [Carbon::now()->startOfYear(), Carbon::now()])
+
             ->where(function($query) {
                 // Adjust this condition based on how you determine negative sentiment
                 // Option 1: If you have a sentiment column
@@ -128,6 +577,43 @@ public function getHistoricalNegative()
         
         // Create an array with all 6 months (including current month)
         $result = $this->generateMonthlyDataArray(6, $negativeFeedbackCounts);
+        
+        return response()->json($result);
+    } catch (\Exception $e) {
+        Log::error('Error fetching historical negative feedback: ' . $e->getMessage());
+        return response()->json([], 500);
+    }
+}
+
+
+
+public function getHistoricalNeutral()
+{
+    try {
+      
+        // Fetch negative feedback counts grouped by month
+        $neutralFeedbackCounts = DB::table('survey_responses')  // Use your actual table name
+            ->select(
+                DB::raw('YEAR(created_at) as year'),
+                DB::raw('MONTH(created_at) as month'),
+                DB::raw('COUNT(*) as count')
+            )
+            ->whereBetween('created_at', [Carbon::now()->startOfYear(), Carbon::now()])
+            ->where(function($query) {
+                // Adjust this condition based on how you determine negative sentiment
+                // Option 1: If you have a sentiment column
+                $query->where('sentiment', 'neutral');
+                
+                // Option 2: If you determine sentiment based on rating
+                // $query->where('rating', '<=', 3);
+            })
+            ->groupBy('year', 'month')
+            ->orderBy('year')
+            ->orderBy('month')
+            ->get();
+        
+        // Create an array with all 6 months (including current month)
+        $result = $this->generateMonthlyDataArray(6, $neutralFeedbackCounts);
         
         return response()->json($result);
     } catch (\Exception $e) {
@@ -284,10 +770,14 @@ public function surveys(Request $request)
     $endDate = $startDate->copy()->addMonths(2)->endOfMonth();
 
     // Fetch responses for the selected quarter and year
-    $responses = survey_responses::whereBetween('created_at', [$startDate, $endDate])->get()    ;
+    $responses = survey_responses::whereBetween('created_at', [$startDate, $endDate])->get();
     $total_responses = $responses->count();
 
-                                   $total_responses = $responses->count();
+            
+$startDate = Carbon::now()->startOfYear(); // January 1 of current year
+$endDate = Carbon::now()->endOfDay();      // End of today
+$overall_responses = survey_responses::whereBetween('created_at', [$startDate, $endDate])->count();    
+
       $mainOffice = MainOffice::all();
       $subOffice = SubOffice::all();
       $service = Service::all();
@@ -298,7 +788,8 @@ public function surveys(Request $request)
         'subOffice', 
         'total_responses',
         'selectedQuarter',
-        'selectedYear'
+        'selectedYear',
+        'overall_responses'
     ));  
 
 }
@@ -312,9 +803,11 @@ public function surveys(Request $request)
         // Get the office name (you can customize this part based on your logic)
        
         // Get survey responses for the current quarter using whereBetween()
-        $responses = survey_responses::whereBetween('created_at', [$startOfQuarter, $endOfQuarter])
-        ->whereYear('created_at', $currentYear)    
-        ->get();
+      $responses = survey_responses::whereBetween('created_at', [Carbon::create($currentYear,1,1), $endOfQuarter])
+    ->whereYear('created_at', $currentYear)
+    ->where('service_availed', '!=', 'Other requests/inquiries')
+    ->get();
+
     
         // Count the total responses, positive and negative sentiments
         $total_responses = $responses->count();
@@ -550,6 +1043,115 @@ public function Admin_OfficeRemarks(int $quarter, int $year)
 
 
 
+public function overallRankedOffice(int $quarter, int $year){
+    
+
+    $offices = MainOffice::all(); // Fetch all offices
+    $totalOffices = $offices->count(); // Count total offices
+    $now = Carbon::now(); // Get current date and time using Carbon
+ 
+    // Map quarters to start and end months
+    $quarters = [
+        1 => ['start' => 1,  'end' => 3],
+        2 => ['start' => 4,  'end' => 6],
+        3 => ['start' => 7,  'end' => 9],
+        4 => ['start' => 10, 'end' => 12],
+    ];
+
+    if (!isset($quarters[$quarter])) {
+        return response()->json(['error' => 'Invalid quarter.'], 400);
+    }
+
+    // Define the date range based on selected quarter/year
+    $startOfQuarter = Carbon::create($year, $quarters[$quarter]['start'], 1)->startOfMonth();
+    $endOfQuarter = Carbon::create($year, $quarters[$quarter]['end'], 1)->endOfMonth();
+
+    
+ // Get the total survey responses for the current quarter
+    $totalSurveyResponses = survey_responses::whereBetween('created_at', [  Carbon::create($year, 1, 1), $endOfQuarter])
+        
+    ->count();
+
+
+    $sqdColumns = [
+        'sqd1' => 'SQD1',
+        'sqd2' => 'SQD2',
+        'sqd3' => 'SQD3',
+        'sqd4' => 'SQD4',
+        'sqd5' => 'SQD5',
+        'sqd6' => 'SQD6',
+        'sqd7' => 'SQD7',
+        'sqd8' => 'SQD8'
+    ];
+
+    $rankedOffices = $offices->map(function ($office) use ($sqdColumns, $year, $quarter, $quarters) {
+
+    
+    
+    $startOfQuarter = Carbon::create($year, $quarters[$quarter]['start'], 1)->startOfMonth();
+    $endOfQuarter = Carbon::create($year, $quarters[$quarter]['end'], 1)->endOfMonth();
+ 
+        $responses = survey_responses::where('main_office', $office->office_name)
+        ->whereBetween('created_at', [ Carbon::create($year, 1, 1), $endOfQuarter])
+        ->get();
+    
+        $total5s = $total4s = $totalNAs = $totalValidResponses = 0;
+
+        foreach ($sqdColumns as $key => $label) {
+            $count5 = $responses->where($key, 5)->count();
+            $count4 = $responses->where($key, 4)->count();
+            $countNA = $responses->where($key, 'N/A')->count();
+            $totalResponses = $responses->count();
+            $validResponses = $totalResponses - $countNA;
+
+            $total5s += $count5;
+            $total4s += $count4;
+            $totalNAs += $countNA;
+            $totalValidResponses += $validResponses;
+        }
+
+        // Calculate overall score
+        $overallScore = ($totalValidResponses > 0) ? ($total5s + $total4s) / $totalValidResponses : 0;
+
+        // Add computed score to the office object
+        $office->overall_score = $overallScore;
+
+
+
+
+
+
+
+
+        
+        return [
+            'office_name' => $office->office_name,
+            'overall_score' => $overallScore,
+            'total_responses' => $totalResponses,  
+            'complaints' => $responses->where('type', 'complaint')->count(),
+            'feedbacks' => $responses->where('type', 'feedback')->count(),
+            'recommendations' => $responses->where('type', 'recommendation')->count(),
+        ];
+    })
+    ->sortByDesc('overall_score') // Sort in descending order (highest score first)
+    ->values(); // Reset array index
+
+     $totalSurvey_wo_others = survey_responses::whereBetween('created_at', [  Carbon::create($year, 1, 1), $endOfQuarter])
+           ->whereYear('created_at', $year)
+    ->where('service_availed', '!=', 'Other requests/inquiries')
+    ->count();
+
+    return response()->json([
+        'totalOffices' => $totalOffices,
+            'totalSurvey_wo_others' => $totalSurvey_wo_others,  
+
+        'totalSurveyResponses' => $totalSurveyResponses,
+        'rankedOffices' => $rankedOffices
+    ]);
+    
+}
+
+
 public function getRankedOffices(int $quarter, int $year){
     
 
@@ -650,6 +1252,53 @@ public function getRankedOffices(int $quarter, int $year){
     ]);
     
 }
+
+
+public function getOverall()
+{ 
+    $sqdColumns = [
+        'sqd1', 'sqd2', 'sqd3', 'sqd4', 'sqd5', 'sqd6', 'sqd7', 'sqd8'
+    ];
+    $now = Carbon::now();
+    $startOfQuarter = $now->copy()->firstOfQuarter();
+    $endOfQuarter = $now->copy()->lastOfQuarter();
+      $currentYear = Carbon::now()->year;   
+      
+    $responses = survey_responses::whereBetween('created_at', [
+        Carbon::create($currentYear, 1, 1),  
+        $endOfQuarter  
+    ])->get();
+
+
+    $total5s = $total4s = $totalNAs = $totalValidResponses = 0;
+
+    foreach ($sqdColumns as $column) {
+        $count5 = $responses->where($column, 5)->count();
+        $count4 = $responses->where($column, 4)->count();
+        $countNA = $responses->where($column, 'N/A')->count();
+        $totalResponses = $responses->count();
+        $validResponses = $totalResponses - $countNA;
+
+        $total5s += $count5;
+        $total4s += $count4;
+        $totalNAs += $countNA;
+        $totalValidResponses += $validResponses;
+    }
+
+    // Calculate overall score
+    $overallScore = ($totalValidResponses > 0) ? ($total5s + $total4s) / $totalValidResponses : 0;
+
+    return response()->json([
+        'totalSurveyResponses' => $responses->count(),
+        'totalValidResponses' => $totalValidResponses,
+        'overallScore' => $overallScore,
+        'total5s' => $total5s,
+        'total4s' => $total4s,
+        
+    ]);
+    }
+
+
 public function getOverallSurveyScore()
 { 
     $sqdColumns = [
@@ -690,6 +1339,9 @@ public function getOverallSurveyScore()
         
     ]);
     }
+
+
+
     public function getOverallScoreByMainOffice()
     {
         $sqdColumns = ['sqd1', 'sqd2', 'sqd3', 'sqd4', 'sqd5', 'sqd6', 'sqd7', 'sqd8'];
@@ -697,7 +1349,7 @@ public function getOverallSurveyScore()
         $endOfQuarter = Carbon::now()->lastOfQuarter();
         $currentYear = Carbon::now()->year;
          
-        $responses = survey_responses::whereBetween('created_at', [$startOfQuarter, $endOfQuarter])
+        $responses = survey_responses::whereBetween('created_at', [Carbon::create($currentYear,1,1), $endOfQuarter])
         ->whereYear('created_at', $currentYear)
         ->get();
     
@@ -841,6 +1493,64 @@ public function getQuarterlySurveyScores()
         'quarterly_scores' => $result,
     ]);
 }
+public function getMonthlySurveyScores()
+{
+    $sqdColumns = ['sqd1', 'sqd2', 'sqd3', 'sqd4', 'sqd5', 'sqd6', 'sqd7', 'sqd8'];
+
+    // Get distinct years in the survey responses
+    $years = survey_responses::selectRaw('YEAR(created_at) as year')
+        ->distinct()
+        ->pluck('year')
+        ->toArray();
+
+    $result = [];
+
+    foreach ($years as $year) {
+        for ($month = 1; $month <= 12; $month++) {
+            $start = Carbon::create($year, $month, 1)->startOfMonth();
+            $end = Carbon::create($year, $month, 1)->endOfMonth();
+
+            $responses = survey_responses::whereBetween('created_at', [$start, $end])->get();
+
+            if ($responses->isEmpty()) {
+                continue; // Skip months with no responses
+            }
+
+            $total5s = $total4s = $totalNAs = $totalValidResponses = 0;
+
+            foreach ($sqdColumns as $column) {
+                $count5 = $responses->where($column, 5)->count();
+                $count4 = $responses->where($column, 4)->count();
+                $countNA = $responses->where($column, 'N/A')->count();
+                $totalResponses = $responses->count();
+                $validResponses = $totalResponses - $countNA;
+
+                $total5s += $count5;
+                $total4s += $count4;
+                $totalNAs += $countNA;
+                $totalValidResponses += $validResponses;
+            }
+
+            $overallScore = $totalValidResponses > 0 ? ($total5s + $total4s) / $totalValidResponses : 0;
+
+            $result[] = [
+                'year' => $year,
+                'month' => Carbon::create()->month($month)->format('F'), // "January", "February", etc.
+                'month_number' => $month, // for sorting or labeling
+                'totalSurveyResponses' => $responses->count(),
+                'totalValidResponses' => $totalValidResponses,
+                'total5s' => $total5s,
+                'total4s' => $total4s,
+                'overallScore' => round($overallScore, 4),
+            ];
+        }
+    }
+
+    return response()->json([
+        'success' => true,
+        'monthly_scores' => $result,
+    ]);
+}
 
 public function getTopOfficesPerSQD()
 {
@@ -853,16 +1563,15 @@ public function getTopOfficesPerSQD()
         $currentYear = Carbon::now()->year;
         $now = Carbon::now();
      
-        $startOfQuarter = $now->copy()->firstOfQuarter();
-        $endOfQuarter = $now->copy()->lastOfQuarter();
-    
-        $officeScores = [];
+$startOfYear = Carbon::createFromDate($currentYear, 1, 1)->startOfDay();
+$endDate = $now; 
 
-        foreach ($offices as $office) {
-            $responses = survey_responses::where('main_office', $office->office_name)
-                ->whereYear('created_at', $currentYear)
-                ->whereBetween('created_at', [$startOfQuarter, $endOfQuarter])
-                ->get();
+$officeScores = [];
+
+foreach ($offices as $office) {
+    $responses = survey_responses::where('main_office', $office->office_name)
+        ->whereBetween('created_at', [$startOfYear, $endDate])
+        ->get();
 
             $count5 = $responses->where($sqd, 5)->count();
             $count4 = $responses->where($sqd, 4)->count();
@@ -907,8 +1616,8 @@ public function getTopSectionPerSQD()
 
     $now = Carbon::now();
     $currentYear = Carbon::now()->year;  
-    $startOfQuarter = $now->copy()->firstOfQuarter();
-    $endOfQuarter = $now->copy()->lastOfQuarter();
+  $startOfYear = Carbon::createFromDate($currentYear, 1, 1)->startOfDay();
+$endDate = $now; 
 
     foreach ($sqdColumns as $sqd) {
         $allOfficesPerSQD[$sqd] = [];
@@ -916,7 +1625,7 @@ public function getTopSectionPerSQD()
         foreach ($offices as $office) {
             $responses = survey_responses::where('office_transacted_with', $office->sub_office_name)
             ->whereYear('created_at', $currentYear)  
-            ->whereBetween('created_at', [$startOfQuarter, $endOfQuarter])
+            ->whereBetween('created_at', [$startOfYear, $endDate])
                 ->get();
 
             if ($responses->isEmpty()) {
@@ -959,8 +1668,8 @@ public function getTopServicePerSQD()
 
     $now = Carbon::now();
     $currentYear = Carbon::now()->year;  
-    $startOfQuarter = $now->copy()->firstOfQuarter();
-    $endOfQuarter = $now->copy()->lastOfQuarter();
+  $startOfYear = Carbon::createFromDate($currentYear, 1, 1)->startOfDay();
+$endDate = $now; 
 
     foreach ($sqdColumns as $sqd) {
         $allOfficesPerSQD[$sqd] = [];
@@ -968,7 +1677,7 @@ public function getTopServicePerSQD()
         foreach ($offices as $office) {
             $responses = survey_responses::where('service_availed', $office->service_name)
             ->whereYear('created_at', $currentYear)    
-            ->whereBetween('created_at', [$startOfQuarter, $endOfQuarter])
+            ->whereBetween('created_at', [ $startOfYear, $endDate])
                 ->get();
 
             if ($responses->isEmpty()) {

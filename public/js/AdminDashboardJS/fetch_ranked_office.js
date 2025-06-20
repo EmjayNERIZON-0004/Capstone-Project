@@ -8,7 +8,7 @@ function fetchRankedOffices() {
     // Get the current quarter (1 to 4)
     const currentQuarter = Math.floor(now.getMonth() / 3) + 1;
  
-    fetch(`/Admin/api/ranked-offices/${currentQuarter}/${currentYear}`)
+    fetch(`/Admin/api/overall-ranked-office/${currentQuarter}/${currentYear}`)
 
         .then(response => {
             if (!response.ok) {
@@ -28,6 +28,7 @@ function fetchRankedOffices() {
             
             document.getElementById("totalOffices").textContent = (data.totalOffices || 0) ;
             // Update total survey responses
+            document.getElementById("totalResponses_wo_others").textContent = data.totalSurvey_wo_others || 0;
             document.getElementById("totalResponses").textContent = data.totalSurveyResponses || 0;
 
             // Load ranked offices into the table
@@ -66,7 +67,7 @@ function fetchAndUpdateChart() {
     // Get the current quarter (1 to 4)
     const currentQuarter = Math.floor(now.getMonth() / 3) + 1;
 
-    fetch(`/Admin/api/ranked-offices/${currentQuarter}/${currentYear}`)
+    fetch(`/Admin/api/overall-ranked-office/${currentQuarter}/${currentYear}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
@@ -80,6 +81,7 @@ function fetchAndUpdateChart() {
 
             // Update totals
             document.getElementById("totalOffices").textContent = data.totalOffices || 0;
+            document.getElementById("totalResponses_wo_others").textContent = data.totalSurvey_wo_others || 0;
             document.getElementById("totalResponses").textContent = data.totalSurveyResponses || 0;
 
             // Prepare chart data

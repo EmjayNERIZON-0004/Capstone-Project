@@ -34,7 +34,7 @@ margin-left:10px;margin-right:10px">
 Concerns/Issues  
 
 </div>
-<h5 style="font-family:sans-serif;"> Q<?= $quarter ?> <?= $year ?></h5>
+<h5 class="text" style="font-family:sans-serif;"> Q<?= $quarter ?> <?= $year ?></h5>
 
     </div>
          <table class="table table-bordered">

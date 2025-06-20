@@ -1,6 +1,6 @@
 
 function loadOverallScore() {
-    fetch('Admin/overall-score2')
+    fetch('Admin/overall-total-score')
     .then(response => response.json())
     .then(data => {
         const score = data.overallScore;
@@ -36,6 +36,9 @@ function loadOverallScore() {
             .then(svg => {
                 document.getElementById("faceIcon").innerHTML = svg;
             });
+
     });
 }
+
+
 

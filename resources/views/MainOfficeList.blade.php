@@ -8,8 +8,20 @@
         <div class="container mt-4">
             @include('components.alert')
             
+          
+   <?php
+        $month = date('n'); // Numeric representation of the month (1–12)
+        $year = date('Y'); // Current year
+        $quarter = ceil($month / 3); // Determine the quarter
+    ?>
+    
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h2 class="fw-bold">Office Management Dashboard</h2>
+        <h4 class="text">Q<?= $quarter ?> <?= $year ?></h4>
+    </div>
             <!-- Dashboard Header -->
-            <div class="dashboard-header mb-4">
+            <!-- <div class="dashboard-header mb-4">
                 <div class="row align-items-center">
                     <div class="col-md-7">
                         <div class="d-flex align-items-center">
@@ -26,57 +38,157 @@
                     <div class="col-md-5">
                         <div class="d-flex justify-content-md-end mt-3 mt-md-0">
                              
-                            <a href="mainOffice/create" class="btn btn-custom1 d-flex align-items-center">
-                                <i class="fas fa-plus me-2" style="font-size:20px"></i>
-                                <span>Add New Office</span>
-                            </a>
+                            
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
             
             <!-- Stats Cards -->
-            <div class="row mb-4">
-                <div class="col-md-4">
-                    <div class="stats-card">
-                        <div class="stats-card-body">
-                            <div class="stats-icon">
-                                <i class="fas fa-building"></i>
-                            </div>
-                            <div class="stats-info">
-                                <h3>{{ count($main) }}</h3>
-                                <p>Total Offices</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="stats-card">
-                        <div class="stats-card-body">
-                            <div class="stats-icon blue">
-                                <i class="fas fa-user-tie"></i>
-                            </div>
-                            <div class="stats-info">
-                                <h3>{{ count($main) > 0 ? count($main) : 0 }}</h3>
-                                <p>Office Administrators</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="stats-card">
-                        <div class="stats-card-body">
-                            <div class="stats-icon green">
-                                <i class="fas fa-sitemap"></i>
-                            </div>
-                            <div class="stats-info">
-                                <h3>{{ $main->sum('subOfficeCount') }}</h3>
-                                <p>Total Sections</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="row mb-0">
+
+        
+
+
+
+
+
+                <div class="col-md-4 mb-4">
+      <div class="card shadow-sm h-100" style="border: none;">
+        <div class="card-body text-center">
+          <div class="d-flex justify-content-center mb-2">
+             
+            <div class="bg-primary" style="background-color:rgb(36, 36, 36); padding: 10px; border-radius: 50%;">
+
+<img src="{{ asset('office-building.svg') }}" style="width:30px; height:30px;">
+</div>
+           
+          </div>
+          <h3 class="fw-bold">{{ count($main) }}</h3>
+          <h6 class="text-muted">Main Offices of SDO </h6>
+          <div class="progress mt-3" style="height: 5px;">
+            <div class="progress-bar bg-primary" style="width: 100%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+     <div class="col-md-4 mb-4">
+      <div class="card shadow-sm h-100" style="border: none;">
+        <div class="card-body text-center">
+          <div class="d-flex justify-content-center mb-2"> 
+            <div class="bg-secondary" style="background-color:rgb(36, 36, 36); padding: 10px; border-radius: 50%;">
+
+<img src="{{ asset('user_admin.svg') }}" style="width:30px; height:30px;">
+</div>
+           
+          </div>
+          <h3 class="fw-bold">{{ count($main) > 0 ? count($main) : 0 }}</h3>
+          <h6 class="text-muted">Office Admins</h6>
+          <div class="progress mt-3" style="height: 5px;">
+            <div class="progress-bar bg-secondary" style="width: 100%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+          
+    
+    
+     <div class="col-md-4 mb-4">
+      <div class="card shadow-sm h-100" style="border: none;">
+        <div class="card-body text-center">
+          <div class="d-flex justify-content-center mb-2">
+             <div class="bg-success" style="background-color:rgb(36, 36, 36); padding: 10px; border-radius: 50%;">
+
+<img src="{{ asset('office_link.svg') }}" style="width:30px; height:30px;">
+</div>
+          
+          </div>
+          <h3 class="fw-bold">{{ $main->sum('subOfficeCount') }}</h3>
+          <h6 class="text-muted">Sections</h6>
+          <div class="progress mt-3" style="height: 5px;">
+            <div class="progress-bar bg-success" style="width: 100%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+                
             </div>
+
+
+
+
+           <div class="card shadow-sm " style="background: white; border: 1px solid #ddd;height:200px">
+    <div class="row" style="height: 200px;">
+        <!-- Left Panel -->
+        <div class="col-md-6 d-flex align-items-center justify-content-center" style="border-right: 1px solid #dee2e6;">
+            <div class="text-center py-3 w-100">
+            
+                <img src="{{ asset('logo.png') }}" alt="Logo" style="width: 120px; height: 120px; object-fit: contain;">
+             <h2 class="fw-bold text-primary"  >Add New Office</h2>
+            </div>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="col-md-6">
+            <div class="p-3">
+                <form action="{{ route('mainOffice.store') }}" method="POST">
+                    @csrf
+
+                    <div class="row  align-items-center">
+                        <label for="office_id" class="col-sm-4 col-form-label">Main Office ID:</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control form-control-sm @error('office_id') is-invalid @enderror"
+                                   id="office_id" name="office_id" value="{{ old('office_id') }}" required>
+                            @error('office_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="row   align-items-center">
+                        <label for="office_name" class="col-sm-4 col-form-label">Office Name:</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control form-control-sm @error('office_name') is-invalid @enderror"
+                                   id="office_name" name="office_name" value="{{ old('office_name') }}" required>
+                            @error('office_name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="row   align-items-center">
+                        <label for="office_admin" class="col-sm-4 col-form-label">Office Admin:</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control form-control-sm @error('office_admin') is-invalid @enderror"
+                                   id="office_admin" name="office_admin" value="{{ old('office_admin') }}" required>
+                            @error('office_admin')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+ 
+
+                     <div class="row  mt-3 align-items-center">
+                          <div class="col-sm-4">
+
+                          </div>
+                        <div class="col-sm-8">
+                             <button type="submit" class="btn btn-sm btn-primary me-2 w-100">Add Office</button>
+                       
+                        </div>
+                    </div>
+
+                     
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
             
             <!-- Search Bar -->
             <!-- <div class="card search-card mb-4">
@@ -91,65 +203,101 @@
             </div> -->
             
             <!-- Main Content -->
-            <div class="card main-card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Office Directory</h5>
-                     
-                    </div>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                    <table class="table table-bordered" id="officeTable">
-        <thead class="table-dark">
-            <tr>
-                <th scope="col">Main Office ID</th>
-                <th scope="col">Office Name</th> 
-                <!-- <th scope="col">Office Admin</th> -->
-                <th scope="col">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            
-        @foreach($main as $mainOffice)
-                <tr>
-                    <td >{{ $mainOffice->office_id }}</td>
-                    <td >{{ $mainOffice->office_name }}</td>
-                    <!-- <td>{{ $mainOffice->office_admin }}</td> -->
+          
+             @php
+    $count = $main->count();
+    $colClass = match(true) {
+        $count === 1 => 'col-12',
+        $count === 2 => 'col-md-6',
+        $count === 3 => 'col-md-4',
+        default => 'col-md-4',
+    };
+@endphp
+ <div class="d-flex justify-content-between align-items-center mt-3">
+        <h2 class="fw-bold">Offices of Schools Division Office SCC</h2>
+       
+    </div>
+<div class="row  ">
+    @forelse($main as $mainOffice)
+        <div class="{{ $colClass }} mb-4">
+                 
+                {{-- Top Section --}}
+              <div class="card h-100 shadow-sm text-center p-3">
+    {{-- Profile Image --}}
+    
+    
+    {{-- Office Details --}}
+    <div class="fw-bold text-primary" style="font-size: 20px;">
+        {{ $mainOffice->office_id }}
+    </div>
+    <div class="text-muted" style="font-size: 14px;">
+        {{ $mainOffice->office_name }}
+    </div>
+    <div class="mb-2" style="float: right;">
+     <img
+         src="{{ $mainOffice->image_path ? asset('images/' . $mainOffice->image_path) : asset('logo.png') }}"
+         alt="Profile Image"
+         class="rounded-circle"
+         style="width: 80px; height: 80px; object-fit: cover; 
+                border: 3px solid rgb(255, 255, 255); 
+                padding: 1px;
+                box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);"
+     >
+ </div>
+    <div class="text-dark mt-1" style="font-size: 14px;">
+        Admin: <span class="fw-semibold">{{ $mainOffice->office_admin }}</span>
+    </div>
+ 
 
-                    <td class="text-center">
-                        <a href="{{ route('mainOffice.edit', $mainOffice->id) }}" class="btn btn-primary btn-custom mb-1 mt-1">
-                            Edit
-                        </a>
-                        <form action="{{ route('mainOffice.destroy', $mainOffice->id) }}" method="POST" class="d-inline ">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-custom mb-1 mt-1" onclick="return confirm('Are you sure?');">
-                                 Delete
-                            </button>
-                        </form>
-                        <a href="{{ route('subOffices.show', $mainOffice->office_id) }}" class="btn btn-success btn-custom position-relative mb-1 mt-1">
-     Sections
-    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-        {{ $mainOffice->subOfficeCount }}
-    </span>
-</a>
+                {{-- Divider --}}
+                <hr class="my-3">
+
+                {{-- Button Section --}}
+              {{-- Button Section --}}
+<div class="d-flex justify-content-center gap-2 flex-wrap">
+    <a href="{{ route('mainOffice.edit', $mainOffice->id) }}" 
+       class="btn btn-sm btn-primary d-flex align-items-center justify-content-center text-nowrap"
+       style="min-width: 90px; height: 38px; font-size: 14px;">
+        Edit
+    </a>
+
+    <form action="{{ route('mainOffice.destroy', $mainOffice->id) }}" method="POST" onsubmit="return confirm('Are you sure?');">
+        @csrf
+        @method('DELETE')
+        <button type="submit" 
+                class="btn btn-sm btn-danger d-flex align-items-center justify-content-center text-nowrap"
+                style="min-width: 90px; height: 38px; font-size: 14px;">
+            Delete
+        </button>
+    </form>
+
+    <div class="position-relative">
+        <a href="{{ route('subOffices.show', $mainOffice->office_id) }}" 
+           class="btn btn-sm btn-success d-flex align-items-center justify-content-center text-nowrap"
+           style="min-width: 90px; height: 38px; font-size: 14px;">
+            Sections
+        </a>
+
+
+        @if($mainOffice->subOfficeCount > 0)
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                {{ $mainOffice->subOfficeCount }}
+            </span>
+        @endif
+    </div>
+</div>
+
+            </div>
+        </div>
+    @empty
+        <div class="col-12 text-center text-muted py-5">
+            No offices found.
+        </div>
+    @endforelse
+</div>
 
 
 
-                    </td>
-                </tr>
-                @endforeach
-                @if($main->isEmpty())
-    <tr>
-        <td colspan="4" class="text-center">No offices found</td>
-    </tr>
-@endif
-
-            
-        </tbody>
-    </table>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -158,8 +306,7 @@
 <style>
 /* Base Styles */
 body {
-    background-color: #f5f7fa;
-    color: #343a40;
+ 
 font-family: sans-serif;     
 }
 

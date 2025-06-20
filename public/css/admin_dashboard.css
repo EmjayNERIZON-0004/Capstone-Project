@@ -130,7 +130,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 16px;
-    padding: 20px;
+    
 }
 
 /* Card Design */
@@ -138,12 +138,13 @@
     background: #fff;
     border-radius: 12px;
     border: 1px solid lightgray;
-    
+    color:#333;
     /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
     padding: 16px;
     text-align: left;
     position: relative;
     transition: all 0.3s ease-in-out;
+    max-height:fit-content;
 }
 
 /* Accent Lines */

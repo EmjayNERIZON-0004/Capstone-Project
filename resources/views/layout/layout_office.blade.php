@@ -11,6 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="icon" href="{{asset('logo.png') }}" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
         body {
@@ -251,7 +252,7 @@
         }
          
         .office-title {
-            font-family: Arial, Helvetica, sans-serif;
+            font-family:Verdana, Geneva, Tahoma, sans-serif;
             font-size: 1.25rem; /* default */
             white-space: nowrap;
             overflow: hidden;
@@ -337,8 +338,21 @@
                     }
                 @endphp
                 
+
+                <?php
+
+use App\Models\MainOffice as main;
+
+ $officeId = session('office_id');
+
+    $office = main::where('office_id', $officeId)->first();
+ 
+
+                ?>
                 <button class="user-profile-btn dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="{{ asset('office_user.svg') }}" alt="User Icon">
+                    <img
+                    style="object-fit: cover;"
+                    src="{{ $office->image_path ? asset('images/' . $office->image_path) : asset('logo.png') }}" alt="User Icon">
                     <span class="user-name">{{ $officeAdmin }}</span>
                    
                 </button>
@@ -353,7 +367,7 @@
                         </svg>
                         Dashboard
                     </a></li>
-                    <li><a class="dropdown-item" href="#">
+                    <li><a class="dropdown-item" href="OfficeProfile">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                             <circle cx="12" cy="7" r="4"></circle>
